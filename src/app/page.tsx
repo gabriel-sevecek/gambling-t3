@@ -67,17 +67,18 @@ export default async function Home() {
 										)}
 									</div>
 									
-									<form>
+									<form
+										action={async () => {
+											"use server";
+											await auth.api.signOut({
+												headers: await headers(),
+											});
+											redirect("/");
+										}}
+									>
 										<button
 											className="rounded-full bg-gray-800 px-10 py-3 font-semibold text-white no-underline transition hover:bg-gray-700"
-											formAction={async () => {
-												"use server";
-												await auth.api.signOut({
-													headers: await headers(),
-												});
-												redirect("/");
-											}}
-											type="button"
+											type="submit"
 										>
 											Sign out
 										</button>
