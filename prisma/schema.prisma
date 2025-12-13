@@ -1,4 +1,4 @@
-// Prisma schema for Better Auth
+// Better Auth
 // learn more: https://better-auth.com/docs/concepts/database
 
 generator client {
@@ -6,74 +6,234 @@ generator client {
   output   = "../generated/prisma"
 }
 
-// NOTE: When using mysql or sqlserver, uncomment the //@db.Text annotations in model Account below
-// Further reading:
-// https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  id            String    @id
-  name          String //@db.Text
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String? //@db.Text
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-
+  id               String            @id @default(cuid())
+  name             String
+  email            String
+  emailVerified    Boolean           @default(false)
+  image            String?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  sessions         Session[]
+  accounts         Account[]
+  matchBets        MatchBet[]
+  competitionUsers CompetitionUser[]
 
   @@unique([email])
-  @@map("user")
+  @@index([email])
+  @@map("users")
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String? //@db.Text
-  userAgent String? //@db.Text
-  userId    String
+  id        String   @id @default(cuid())
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
-  @@map("session")
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
 }
 
 model Account {
-  id                    String    @id
-  accountId             String //@db.Text
-  providerId            String //@db.Text
-  userId                String
+  id                    String    @id @default(cuid())
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String? //@db.Text
-  refreshToken          String? //@db.Text
-  idToken               String? //@db.Text
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String? //@db.Text
-  password              String? //@db.Text
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
-  @@map("account")
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
 }
 
 model Verification {
-  id         String   @id
-  identifier String //@db.Text
-  value      String //@db.Text
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  @@map("verification")
+  @@unique([identifier, value])
+  @@index([identifier])
+  @@index([expiresAt])
+  @@map("verifications")
+}
+
+// Footbal data API
+
+model FootballCompetition {
+  id              Int              @id @default(autoincrement())
+  name            String
+  areaId          Int              @map("area_id")
+  currentSeasonId Int?             @unique @map("current_season_id")
+  code            String?          @unique
+  lastUpdated     DateTime         @map("last_updated")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  seasons         FootballSeason[]
+  currentSeason   FootballSeason?  @relation("CurrentSeason", fields: [currentSeasonId], references: [id])
+  competitions    Competition[]
+
+  @@index([areaId])
+  @@index([code])
+  @@map("football_competitions")
+}
+
+model FootballSeason {
+  id                    Int                  @id @default(autoincrement())
+  footballCompetitionId Int                  @map("football_competition_id")
+  footballCompetition   FootballCompetition  @relation(fields: [footballCompetitionId], references: [id], onDelete: Cascade)
+  startDate             DateTime             @map("start_date")
+  endDate               DateTime             @map("end_date")
+  currentMatchday       Int?                 @map("current_matchday")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+  matches               FootballMatch[]
+  competitions          Competition[]
+  currentFor            FootballCompetition? @relation("CurrentSeason")
+
+  @@unique([footballCompetitionId, startDate])
+  @@index([footballCompetitionId])
+  @@index([startDate, endDate])
+  @@map("football_seasons")
+}
+
+model FootballTeam {
+  id          Int             @id @default(autoincrement())
+  name        String
+  shortName   String          @map("short_name")
+  tla         String          @unique
+  crestUrl    String?         @map("crest_url")
+  lastUpdated DateTime        @map("last_updated")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  homeMatches FootballMatch[] @relation("HomeTeam")
+  awayMatches FootballMatch[] @relation("AwayTeam")
+
+  @@index([name])
+  @@index([tla])
+  @@map("football_teams")
+}
+
+model FootballMatch {
+  id            Int             @id @default(autoincrement())
+  seasonId      Int             @map("season_id")
+  season        FootballSeason  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  date          DateTime
+  status        MatchStatus     @default(SCHEDULED)
+  matchday      Int?
+  homeTeamId    Int?            @map("home_team_id")
+  homeTeam      FootballTeam?   @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId    Int?            @map("away_team_id")
+  awayTeam      FootballTeam?   @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  homeTeamGoals Int?            @map("home_team_goals")
+  awayTeamGoals Int?            @map("away_team_goals")
+  lastUpdated   DateTime        @map("last_updated")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  matchBets     MatchBet[]
+
+  @@index([seasonId])
+  @@index([date])
+  @@index([status])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+  @@index([matchday])
+  @@map("football_matches")
+}
+
+
+// Gambling
+
+model Competition {
+  id                    Int                 @id @default(autoincrement())
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+  name                  String
+  description           String?
+  isActive              Boolean             @default(true) @map("is_active")
+  footballSeasonId      Int                 @map("football_season_id")
+  footballSeason        FootballSeason      @relation(fields: [footballSeasonId], references: [id], onDelete: Cascade)
+  footballCompetitionId Int                 @map("football_competition_id")
+  footballCompetition   FootballCompetition @relation(fields: [footballCompetitionId], references: [id], onDelete: Cascade)
+  matchBets             MatchBet[]
+  competitionUsers      CompetitionUser[]
+
+  @@index([footballSeasonId])
+  @@index([footballCompetitionId])
+  @@index([isActive])
+  @@map("competitions")
+}
+
+model MatchBet {
+  id              Int           @id @default(autoincrement())
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  prediction      MatchResult
+  footballMatchId Int           @map("football_match_id")
+  footballMatch   FootballMatch @relation(fields: [footballMatchId], references: [id], onDelete: Cascade)
+  competitionId   Int           @map("competition_id")
+  competition     Competition   @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  userId          String        @map("user_id")
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, footballMatchId, competitionId])
+  @@index([userId])
+  @@index([footballMatchId])
+  @@index([competitionId])
+  @@map("match_bets")
+}
+
+model CompetitionUser {
+  id            Int         @id @default(autoincrement())
+  userId        String      @map("user_id")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  competitionId Int         @map("competition_id")
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  joinedAt      DateTime    @default(now()) @map("joined_at")
+  isActive      Boolean     @default(true) @map("is_active")
+
+  @@unique([userId, competitionId])
+  @@index([userId])
+  @@index([competitionId])
+  @@map("competition_users")
+}
+
+enum MatchResult {
+  HOME
+  AWAY
+  DRAW
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  IN_PLAY
+  PAUSED
+  FINISHED
+  POSTPONED
+  SUSPENDED
+  CANCELLED
 }
