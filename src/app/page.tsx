@@ -22,7 +22,7 @@ export default async function Home() {
 						<div className="flex flex-col items-center justify-center gap-4">
 							<p className="text-center text-2xl text-gray-800">
 								<span className="text-gray-800">
-									Logged in as {session!.user?.name}
+									Logged in as {session?.user?.name}
 								</span>
 							</p>
 							<div className="flex flex-col items-center gap-6">
