@@ -16,7 +16,7 @@ import {
 import { api } from "~/trpc/server";
 
 export default async function Page() {
-	const userCompetitions = await api.competition.getUserCompetitions();
+	const { user, competitions } = api.user.getCurrentUserWithCompetitions();
 	return (
 		<SidebarProvider>
 			<AppSidebar />
