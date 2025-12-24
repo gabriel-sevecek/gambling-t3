@@ -16,7 +16,7 @@ import type * as React from "react";
 
 import { NavMain } from "~/components/nav-main";
 import { NavProjects } from "~/components/nav-projects";
-import { NavUser } from "~/components/nav-user";
+import { NavUser, type SidebarUser } from "~/components/nav-user";
 import { TeamSwitcher } from "~/components/team-switcher";
 import {
 	Sidebar,
@@ -28,11 +28,6 @@ import {
 
 // This is sample data.
 const data = {
-	user: {
-		name: "shadcn",
-		email: "m@example.com",
-		avatar: "/avatars/shadcn.jpg",
-	},
 	teams: [
 		{
 			name: "Acme Inc",
@@ -156,7 +151,10 @@ const data = {
 	],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+	user,
+	...props
+}: React.ComponentProps<typeof Sidebar> & { user: SidebarUser }) {
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
@@ -167,7 +165,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavProjects projects={data.projects} />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				<NavUser user={user} />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

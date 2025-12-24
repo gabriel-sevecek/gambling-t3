@@ -1,4 +1,5 @@
 import { AppSidebar } from "~/components/app-sidebar";
+import type { SidebarUser } from "~/components/nav-user";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -16,10 +17,17 @@ import {
 import { api } from "~/trpc/server";
 
 export default async function Page() {
-	await api.user.getCurrentUserWithCompetitions();
+	const { user } = await api.user.getCurrentUserWithCompetitions();
+
+	const navUser: SidebarUser = {
+		name: user!.name,
+		email: user!.email,
+		avatar: user!.image ?? "",
+	};
+
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<AppSidebar user={navUser} />
 			<SidebarInset>
 				<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
 					<div className="flex items-center gap-2 px-4">

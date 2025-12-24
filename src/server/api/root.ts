@@ -1,4 +1,5 @@
 import { competitionRouter } from "~/server/api/routers/competition";
+import { userRouter } from "~/server/api/routers/user";
 import {
 	createCallerFactory,
 	createTRPCRouter,
@@ -13,6 +14,7 @@ import {
 export const appRouter = createTRPCRouter({
 	health: publicProcedure.query(() => "ok"),
 	competition: competitionRouter,
+	user: userRouter,
 });
 
 // export type definition of API

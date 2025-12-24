@@ -28,15 +28,13 @@ import {
 } from "~/components/ui/sidebar";
 import { authClient } from "~/server/better-auth/client";
 
-export function NavUser({
-	user,
-}: {
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
-}) {
+export type SidebarUser = {
+	name: string;
+	email: string;
+	avatar: string;
+};
+
+export function NavUser({ user }: { user: SidebarUser }) {
 	const { isMobile } = useSidebar();
 	const router = useRouter();
 	const handleLogout = async () => {

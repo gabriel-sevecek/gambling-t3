@@ -13,7 +13,10 @@ export const createUserService = (deps: UserDependencies) => ({
 		return await deps.repository.findAllUsers();
 	},
 
-	updateUser: async (userId: string, data: { name?: string; email?: string }) => {
+	updateUser: async (
+		userId: string,
+		data: { name?: string; email?: string },
+	) => {
 		return await deps.repository.updateUser(userId, data);
 	},
 

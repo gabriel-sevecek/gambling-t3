@@ -1,9 +1,6 @@
 import { db } from "~/server/db";
 
 export class UserRepository {
-	/**
-	 * Find user by ID
-	 */
 	static async findUserById(userId: string) {
 		return await db.user.findUnique({
 			where: {
@@ -12,9 +9,6 @@ export class UserRepository {
 		});
 	}
 
-	/**
-	 * Find all active users
-	 */
 	static async findAllUsers() {
 		return await db.user.findMany({
 			orderBy: {
@@ -23,10 +17,10 @@ export class UserRepository {
 		});
 	}
 
-	/**
-	 * Update user profile
-	 */
-	static async updateUser(userId: string, data: { name?: string; email?: string }) {
+	static async updateUser(
+		userId: string,
+		data: { name?: string; email?: string },
+	) {
 		return await db.user.update({
 			where: {
 				id: userId,
@@ -35,9 +29,6 @@ export class UserRepository {
 		});
 	}
 
-	/**
-	 * Deactivate user
-	 */
 	static async deactivateUser(userId: string) {
 		return await db.user.update({
 			where: {
