@@ -1,25 +1,30 @@
 import { CompetitionRepository } from "~/server/repositories/competition.repository";
 
-export class CompetitionService {
-	static async getUserCompetitions(userId: string) {
-		return await CompetitionRepository.findUserCompetitions(userId);
-	}
-
-	static async getAvailableCompetitions() {
-		return await CompetitionRepository.findAvailableCompetitions();
-	}
-
-	static async joinCompetition(userId: string, competitionId: number) {
-		return await CompetitionRepository.upsertCompetitionUser(
-			userId,
-			competitionId,
-		);
-	}
-
-	static async leaveCompetition(userId: string, competitionId: number) {
-		return await CompetitionRepository.deactivateCompetitionUser(
-			userId,
-			competitionId,
-		);
-	}
+interface CompetitionDependencies {
+	repository: typeof CompetitionRepository;
 }
+
+export const createCompetitionService = (deps: CompetitionDependencies) => ({
+	getUserCompetitions: async (userId: string) => {
+		return await deps.repository.findUserCompetitions(userId);
+	},
+
+	getAvailableCompetitions: async () => {
+		return await deps.repository.findAvailableCompetitions();
+	},
+
+	joinCompetition: async (userId: string, competitionId: number) => {
+		return await deps.repository.upsertCompetitionUser(userId, competitionId);
+	},
+
+	leaveCompetition: async (userId: string, competitionId: number) => {
+		return await deps.repository.deactivateCompetitionUser(
+			userId,
+			competitionId,
+		);
+	},
+});
+
+export const competitionService = createCompetitionService({
+	repository: CompetitionRepository,
+});

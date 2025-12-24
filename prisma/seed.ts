@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
 	console.log("🌱 Seeding database...");
 
-
 	// Create a football competition
 	const footballCompetition = await prisma.footballCompetition.upsert({
 		where: { code: "PL" },
