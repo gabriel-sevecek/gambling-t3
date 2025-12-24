@@ -4,16 +4,12 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "~/app/_components/auth-form";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
-import { HydrateClient } from "~/trpc/server";
-import { api } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
 	const session = await getSession();
-	
-	// Fetch user's competitions if logged in
-	const userCompetitions = session?.user?.id 
-		? await api.competition.getUserCompetitions({ userId: session.user.id })
-		: [];
+
+	const userCompetitions = await api.competition.getUserCompetitions();
 
 	return (
 		<HydrateClient>
@@ -34,27 +30,28 @@ export default async function Home() {
 								<div className="flex flex-col items-center gap-6">
 									{/* User's Competitions */}
 									<div className="w-full max-w-2xl">
-										<h2 className="text-xl font-semibold text-gray-800 mb-4">
+										<h2 className="mb-4 font-semibold text-gray-800 text-xl">
 											Your Competitions
 										</h2>
 										{userCompetitions.length > 0 ? (
 											<div className="grid gap-4">
 												{userCompetitions.map((competition) => (
 													<div
+														className="rounded-lg border border-gray-200 bg-gray-50 p-4"
 														key={competition.id}
-														className="border border-gray-200 rounded-lg p-4 bg-gray-50"
 													>
 														<h3 className="font-medium text-gray-800">
 															{competition.name}
 														</h3>
 														{competition.description && (
-															<p className="text-sm text-gray-600 mt-1">
+															<p className="mt-1 text-gray-600 text-sm">
 																{competition.description}
 															</p>
 														)}
 														{competition.footballCompetition && (
-															<p className="text-xs text-gray-500 mt-2">
-																Football Competition: {competition.footballCompetition.name}
+															<p className="mt-2 text-gray-500 text-xs">
+																Football Competition:{" "}
+																{competition.footballCompetition.name}
 															</p>
 														)}
 													</div>
@@ -66,7 +63,7 @@ export default async function Home() {
 											</p>
 										)}
 									</div>
-									
+
 									<form
 										action={async () => {
 											"use server";
