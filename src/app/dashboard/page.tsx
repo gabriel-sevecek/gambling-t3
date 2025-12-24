@@ -13,8 +13,10 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "~/components/ui/sidebar";
+import { api } from "~/trpc/server";
 
-export default function Page() {
+export default async function Page() {
+	const userCompetitions = await api.competition.getUserCompetitions();
 	return (
 		<SidebarProvider>
 			<AppSidebar />

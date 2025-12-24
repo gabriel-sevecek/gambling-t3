@@ -8,6 +8,7 @@ import {
 	LogOut,
 	Sparkles,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
@@ -25,6 +26,7 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "~/components/ui/sidebar";
+import { authClient } from "~/server/better-auth/client";
 
 export function NavUser({
 	user,
@@ -36,6 +38,21 @@ export function NavUser({
 	};
 }) {
 	const { isMobile } = useSidebar();
+	const router = useRouter();
+	const handleLogout = async () => {
+		try {
+			await authClient.signOut({
+				fetchOptions: {
+					onSuccess: () => {
+						router.push("/sign-in");
+						router.refresh();
+					},
+				},
+			});
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
+	};
 
 	return (
 		<SidebarMenu>
@@ -98,7 +115,7 @@ export function NavUser({
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem onClick={handleLogout}>
 							<LogOut />
 							Log out
 						</DropdownMenuItem>
