@@ -1,7 +1,7 @@
-import { UserRepository } from "~/server/repositories/user.repository";
+import * as userRepository from "~/server/repositories/user.repository";
 
 interface UserDependencies {
-	repository: typeof UserRepository;
+	repository: typeof userRepository;
 }
 
 export const createUserService = (deps: UserDependencies) => ({
@@ -26,5 +26,5 @@ export const createUserService = (deps: UserDependencies) => ({
 });
 
 export const userService = createUserService({
-	repository: UserRepository,
+	repository: userRepository,
 });

@@ -1,7 +1,7 @@
-import { CompetitionRepository } from "~/server/repositories/competition.repository";
+import * as competitionRepository from "~/server/repositories/competition.repository";
 
 interface CompetitionDependencies {
-	repository: typeof CompetitionRepository;
+	repository: typeof competitionRepository;
 }
 
 export const createCompetitionService = (deps: CompetitionDependencies) => ({
@@ -26,5 +26,5 @@ export const createCompetitionService = (deps: CompetitionDependencies) => ({
 });
 
 export const competitionService = createCompetitionService({
-	repository: CompetitionRepository,
+	repository: competitionRepository,
 });
