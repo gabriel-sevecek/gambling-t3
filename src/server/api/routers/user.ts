@@ -5,6 +5,7 @@ import {
 	publicProcedure,
 } from "~/server/api/trpc";
 import { userService } from "~/server/services/user.service";
+import { competitionService } from "~/server/services/competition.service";
 
 export const userRouter = createTRPCRouter({
 	getUserById: protectedProcedure
@@ -29,5 +30,16 @@ export const userRouter = createTRPCRouter({
 	deactivateUser: protectedProcedure
 		.mutation(async ({ ctx }) => {
 			return await userService.deactivateUser(ctx.session.user.id);
+		}),
+
+	getCurrentUserWithCompetitions: protectedProcedure
+		.query(async ({ ctx }) => {
+			const user = await userService.getUserById(ctx.session.user.id);
+			const competitions = await competitionService.getUserCompetitions(ctx.session.user.id);
+			
+			return {
+				...user,
+				competitions,
+			};
 		}),
 });
