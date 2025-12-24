@@ -20,9 +20,9 @@ export default async function Page() {
 	const { user } = await api.user.getCurrentUserWithCompetitions();
 
 	const navUser: SidebarUser = {
-		name: user!.name,
-		email: user!.email,
-		avatar: user!.image ?? "",
+		name: user.name,
+		email: user.email,
+		avatar: user.image ?? "",
 	};
 
 	return (

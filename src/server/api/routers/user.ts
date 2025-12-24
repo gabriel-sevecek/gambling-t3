@@ -15,7 +15,7 @@ export const userRouter = createTRPCRouter({
 		}),
 
 	getCurrentUserWithCompetitions: protectedProcedure.query(async ({ ctx }) => {
-		const user = await userService.getUserById(ctx.session.user.id);
+		const user = ctx.session.user;
 		const competitions = await competitionService.getUserCompetitions(
 			ctx.session.user.id,
 		);
