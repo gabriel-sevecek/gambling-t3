@@ -88,7 +88,7 @@ model FootballCompetition {
   name            String
   areaId          Int              @map("area_id")
   currentSeasonId Int?             @unique @map("current_season_id")
-  code            String?          @unique
+  code            String           @unique
   lastUpdated     DateTime         @map("last_updated")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")

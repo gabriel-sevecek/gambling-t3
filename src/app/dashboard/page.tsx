@@ -37,7 +37,7 @@ export default async function Page() {
 	const userCompetitions = await api.competition.getUserCompetitions();
 	const competitions: SidebarCompetition[] = userCompetitions.map((comp) => ({
 		id: comp.id,
-		code: comp.footballCompetition.code ?? "",
+		code: comp.footballCompetition.code,
 		name: comp.name,
 	}));
 
