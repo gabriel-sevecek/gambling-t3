@@ -4,32 +4,102 @@ import {
 	protectedProcedure,
 	publicProcedure,
 } from "~/server/api/trpc";
-import { competitionService } from "~/server/services/competition.service";
 
 export const competitionRouter = createTRPCRouter({
 	getUserCompetitions: protectedProcedure.query(async ({ ctx }) => {
-		return await competitionService.getUserCompetitions(ctx.session.user.id);
+		return await ctx.db.competition.findMany({
+			where: {
+				competitionUsers: {
+					some: {
+						userId: ctx.session.user.id,
+						isActive: true,
+					},
+				},
+				isActive: true,
+			},
+			include: {
+				footballCompetition: true,
+				footballSeason: true,
+				competitionUsers: {
+					where: {
+						userId: ctx.session.user.id,
+					},
+				},
+				_count: {
+					select: {
+						competitionUsers: {
+							where: {
+								isActive: true,
+							},
+						},
+						matchBets: true,
+					},
+				},
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
 	}),
 
-	getAvailableCompetitions: publicProcedure.query(async () => {
-		return await competitionService.getAvailableCompetitions();
+	getAvailableCompetitions: publicProcedure.query(async ({ ctx }) => {
+		return await ctx.db.competition.findMany({
+			where: {
+				isActive: true,
+			},
+			include: {
+				footballCompetition: true,
+				footballSeason: true,
+				_count: {
+					select: {
+						competitionUsers: {
+							where: {
+								isActive: true,
+							},
+						},
+					},
+				},
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
 	}),
 
 	joinCompetition: protectedProcedure
 		.input(z.object({ competitionId: z.number() }))
 		.mutation(async ({ ctx, input }) => {
-			return await competitionService.joinCompetition(
-				ctx.session.user.id,
-				input.competitionId,
-			);
+			return await ctx.db.competitionUser.upsert({
+				where: {
+					userId_competitionId: {
+						userId: ctx.session.user.id,
+						competitionId: input.competitionId,
+					},
+				},
+				update: {
+					isActive: true,
+				},
+				create: {
+					userId: ctx.session.user.id,
+					competitionId: input.competitionId,
+					isActive: true,
+				},
+			});
 		}),
 
 	leaveCompetition: protectedProcedure
 		.input(z.object({ competitionId: z.number() }))
 		.mutation(async ({ ctx, input }) => {
-			return await competitionService.leaveCompetition(
-				ctx.session.user.id,
-				input.competitionId,
-			);
+			return await ctx.db.competitionUser.update({
+				where: {
+					userId_competitionId: {
+						userId: ctx.session.user.id,
+						competitionId: input.competitionId,
+					},
+				},
+				data: {
+					isActive: false,
+				},
+			});
 		}),
 });

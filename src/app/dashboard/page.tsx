@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { AppSidebar } from "~/components/app-sidebar";
 import type { SidebarUser } from "~/components/nav-user";
 import {
@@ -14,10 +15,16 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "~/components/ui/sidebar";
-import { api } from "~/trpc/server";
+import { getSession } from "~/server/better-auth/server";
 
 export default async function Page() {
-	const { user } = await api.user.getCurrentUserWithCompetitions();
+	const session = await getSession();
+
+	if (!session) {
+		redirect("/sign-in");
+	}
+
+	const { user } = session;
 
 	const navUser: SidebarUser = {
 		name: user.name,
