@@ -92,11 +92,49 @@ async function main() {
 		},
 	});
 
+	const signUpResult2 = await auth.api.signUpEmail({
+		body: {
+			name: "Jane Smith",
+			email: "jane@example.com",
+			password: "password",
+		},
+	});
+
+	if (!signUpResult2.user) {
+		throw new Error("Failed to create second test user");
+	}
+
+	const user2 = signUpResult2.user;
+
+	// Mark email as verified
+	await prisma.user.update({
+		where: { id: user2.id },
+		data: { emailVerified: true },
+	});
+
+	// Join the second user to the competition
+	await prisma.competitionUser.upsert({
+		where: {
+			userId_competitionId: {
+				userId: user2.id,
+				competitionId: competition.id,
+			},
+		},
+		update: {},
+		create: {
+			userId: user2.id,
+			competitionId: competition.id,
+			isActive: true,
+		},
+	});
+
 	console.log("✅ Seeding completed!");
 	console.log(`👤 Created user: ${user.name} (${user.email})`);
+	console.log(`👤 Created user: ${user2.name} (${user2.email})`);
 	console.log(`🏆 Created competition: ${competition.name}`);
-	console.log(`🔗 User joined competition successfully`);
+	console.log(`🔗 Both users joined competition successfully`);
 	console.log(`🔑 Login credentials: test@example.com / password`);
+	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
 
 main()
