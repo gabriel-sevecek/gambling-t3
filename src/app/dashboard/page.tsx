@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppSidebar } from "~/components/app-sidebar";
+import type { SidebarCompetition } from "~/components/nav-projects";
 import type { SidebarUser } from "~/components/nav-user";
 import {
 	Breadcrumb,
@@ -16,6 +17,7 @@ import {
 	SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { getSession } from "~/server/better-auth/server";
+import { api } from "~/trpc/server";
 
 export default async function Page() {
 	const session = await getSession();
@@ -32,9 +34,16 @@ export default async function Page() {
 		avatar: user.image ?? "",
 	};
 
+	const userCompetitions = await api.competition.getUserCompetitions();
+	const competitions: SidebarCompetition[] = userCompetitions.map((comp) => ({
+		id: comp.id,
+		code: comp.footballCompetition.code ?? "",
+		name: comp.name,
+	}));
+
 	return (
 		<SidebarProvider>
-			<AppSidebar user={navUser} />
+			<AppSidebar competitions={competitions} user={navUser} />
 			<SidebarInset>
 				<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
 					<div className="flex items-center gap-2 px-4">

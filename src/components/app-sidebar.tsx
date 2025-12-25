@@ -15,7 +15,10 @@ import {
 import type * as React from "react";
 
 import { NavMain } from "~/components/nav-main";
-import { NavCompetitions } from "~/components/nav-projects";
+import {
+	NavCompetitions,
+	type SidebarCompetition,
+} from "~/components/nav-projects";
 import { NavUser, type SidebarUser } from "~/components/nav-user";
 import { TeamSwitcher } from "~/components/team-switcher";
 import {
@@ -153,8 +156,12 @@ const data = {
 
 export function AppSidebar({
 	user,
+	competitions,
 	...props
-}: React.ComponentProps<typeof Sidebar> & { user: SidebarUser }) {
+}: React.ComponentProps<typeof Sidebar> & {
+	user: SidebarUser;
+	competitions: SidebarCompetition[];
+}) {
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
@@ -162,7 +169,7 @@ export function AppSidebar({
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavCompetitions projects={data.projects} />
+				<NavCompetitions competitions={competitions} />
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser user={user} />
