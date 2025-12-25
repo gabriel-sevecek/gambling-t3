@@ -46,7 +46,7 @@ async function main() {
 		where: { id: 1 },
 		update: {},
 		create: {
-			name: "Premier League 2024/25 Predictions",
+			name: "Piarg 25/26",
 			description:
 				"Predict the outcomes of Premier League matches for the 2024/25 season",
 			footballSeasonId: footballSeason.id,
