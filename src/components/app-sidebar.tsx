@@ -15,7 +15,7 @@ import {
 import type * as React from "react";
 
 import { NavMain } from "~/components/nav-main";
-import { NavProjects } from "~/components/nav-projects";
+import { NavCompetitions } from "~/components/nav-projects";
 import { NavUser, type SidebarUser } from "~/components/nav-user";
 import { TeamSwitcher } from "~/components/team-switcher";
 import {
@@ -162,7 +162,7 @@ export function AppSidebar({
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavProjects projects={data.projects} />
+				<NavCompetitions projects={data.projects} />
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser user={user} />
