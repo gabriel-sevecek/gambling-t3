@@ -128,11 +128,186 @@ async function main() {
 		},
 	});
 
+	// Create teams
+	const teams = await Promise.all([
+		prisma.footballTeam.upsert({
+			where: { tla: "ARS" },
+			update: {},
+			create: {
+				name: "Arsenal FC",
+				shortName: "Arsenal",
+				tla: "ARS",
+				crestUrl: "https://crests.football-data.org/57.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "CHE" },
+			update: {},
+			create: {
+				name: "Chelsea FC",
+				shortName: "Chelsea",
+				tla: "CHE",
+				crestUrl: "https://crests.football-data.org/61.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "LIV" },
+			update: {},
+			create: {
+				name: "Liverpool FC",
+				shortName: "Liverpool",
+				tla: "LIV",
+				crestUrl: "https://crests.football-data.org/64.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "MCI" },
+			update: {},
+			create: {
+				name: "Manchester City FC",
+				shortName: "Man City",
+				tla: "MCI",
+				crestUrl: "https://crests.football-data.org/65.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "MUN" },
+			update: {},
+			create: {
+				name: "Manchester United FC",
+				shortName: "Man United",
+				tla: "MUN",
+				crestUrl: "https://crests.football-data.org/66.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "TOT" },
+			update: {},
+			create: {
+				name: "Tottenham Hotspur FC",
+				shortName: "Tottenham",
+				tla: "TOT",
+				crestUrl: "https://crests.football-data.org/73.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "BUR" },
+			update: {},
+			create: {
+				name: "Burnley FC",
+				shortName: "Burnley",
+				tla: "BUR",
+				crestUrl: "https://crests.football-data.org/328.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "CRY" },
+			update: {},
+			create: {
+				name: "Crystal Palace FC",
+				shortName: "Crystal Palace",
+				tla: "CRY",
+				crestUrl: "https://crests.football-data.org/354.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "BHA" },
+			update: {},
+			create: {
+				name: "Brighton & Hove Albion FC",
+				shortName: "Brighton",
+				tla: "BHA",
+				crestUrl: "https://crests.football-data.org/397.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "WHU" },
+			update: {},
+			create: {
+				name: "West Ham United FC",
+				shortName: "West Ham",
+				tla: "WHU",
+				crestUrl: "https://crests.football-data.org/563.png",
+				lastUpdated: new Date(),
+			},
+		}),
+	]);
+
+	// Create 5 matches for matchday 15
+	const matches = await Promise.all([
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[0].id, // Arsenal
+				awayTeamId: teams[1].id, // Chelsea
+				date: new Date("2024-12-21T15:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[2].id, // Liverpool
+				awayTeamId: teams[3].id, // Man City
+				date: new Date("2024-12-21T17:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[4].id, // Man United
+				awayTeamId: teams[5].id, // Tottenham
+				date: new Date("2024-12-22T14:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[6].id, // Burnley
+				awayTeamId: teams[7].id, // Crystal Palace
+				date: new Date("2024-12-22T16:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[8].id, // Brighton
+				awayTeamId: teams[9].id, // West Ham
+				date: new Date("2024-12-22T19:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+	]);
+
 	console.log("✅ Seeding completed!");
 	console.log(`👤 Created user: ${user.name} (${user.email})`);
 	console.log(`👤 Created user: ${user2.name} (${user2.email})`);
 	console.log(`🏆 Created competition: ${competition.name}`);
 	console.log(`🔗 Both users joined competition successfully`);
+	console.log(`⚽ Created ${teams.length} teams`);
+	console.log(`🏟️ Created ${matches.length} matches for matchday 15`);
 	console.log(`🔑 Login credentials: test@example.com / password`);
 	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
