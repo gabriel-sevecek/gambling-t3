@@ -45,7 +45,7 @@ export const competitionRouter = createTRPCRouter({
 	getCompetitionById: protectedProcedure
 		.input(z.object({ id: z.number() }))
 		.query(async ({ ctx, input }) => {
-			return await ctx.db.competition.findFirst({
+			const competition = await ctx.db.competition.findFirst({
 				where: {
 					id: input.id,
 					competitionUsers: {
@@ -76,6 +76,29 @@ export const competitionRouter = createTRPCRouter({
 					},
 				},
 			});
+
+			if (!competition) {
+				return null;
+			}
+
+			const currentMatchdayMatches = await ctx.db.footballMatch.findMany({
+				where: {
+					seasonId: competition.footballSeasonId,
+					matchday: competition.footballSeason.currentMatchday,
+				},
+				include: {
+					homeTeam: true,
+					awayTeam: true,
+				},
+				orderBy: {
+					date: "asc",
+				},
+			});
+
+			return {
+				...competition,
+				currentMatchdayMatches,
+			};
 		}),
 
 	getAvailableCompetitions: publicProcedure.query(async ({ ctx }) => {
