@@ -42,6 +42,42 @@ export const competitionRouter = createTRPCRouter({
 		});
 	}),
 
+	getCompetitionById: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.query(async ({ ctx, input }) => {
+			return await ctx.db.competition.findFirst({
+				where: {
+					id: input.id,
+					competitionUsers: {
+						some: {
+							userId: ctx.session.user.id,
+							isActive: true,
+						},
+					},
+					isActive: true,
+				},
+				include: {
+					footballCompetition: true,
+					footballSeason: true,
+					competitionUsers: {
+						where: {
+							userId: ctx.session.user.id,
+						},
+					},
+					_count: {
+						select: {
+							competitionUsers: {
+								where: {
+									isActive: true,
+								},
+							},
+							matchBets: true,
+						},
+					},
+				},
+			});
+		}),
+
 	getAvailableCompetitions: publicProcedure.query(async ({ ctx }) => {
 		return await ctx.db.competition.findMany({
 			where: {

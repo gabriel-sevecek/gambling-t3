@@ -1,4 +1,14 @@
-export default async function Page() {
+import { redirect } from "next/navigation";
+
+import { getSession } from "~/server/better-auth/server";
+
+export default async function Home() {
+	const session = await getSession();
+
+	if (!session) {
+		redirect("/sign-in");
+	}
+
 	return (
 		<>
 			<div className="grid auto-rows-min gap-4 md:grid-cols-3">
