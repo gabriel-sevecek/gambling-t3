@@ -5,7 +5,6 @@ export interface BreadcrumbItem {
 
 const breadcrumbConfig: Record<string, string> = {
 	"/": "Home",
-	"/dashboard": "Dashboard",
 	"/sign-in": "Sign In",
 };
 
