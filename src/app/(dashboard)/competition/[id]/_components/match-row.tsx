@@ -1,26 +1,11 @@
 import Image from "next/image";
+import type { Match, PlaceBetMutation } from "~/types/competition";
 import { BetButtons } from "./bet-buttons";
 
 type Team = {
 	name: string;
 	tla: string;
 	crestUrl: string;
-};
-
-type MatchBet = {
-	id: number;
-	prediction: "HOME" | "DRAW" | "AWAY";
-};
-
-type Match = {
-	id: number;
-	date: Date;
-	status: string;
-	homeTeamGoals: number | null;
-	awayTeamGoals: number | null;
-	homeTeam: Team;
-	awayTeam: Team;
-	matchBets: MatchBet[];
 };
 
 type FinishedMatch = Match & {
@@ -30,6 +15,8 @@ type FinishedMatch = Match & {
 
 type MatchRowProps = {
 	match: Match;
+	competitionId: number;
+	placeBetMutation: PlaceBetMutation;
 };
 
 function TeamCrest({ team }: { team: Team }) {
@@ -76,8 +63,11 @@ function MatchResult({
 	);
 }
 
-
-export function MatchRow({ match }: MatchRowProps) {
+export function MatchRow({
+	match,
+	competitionId,
+	placeBetMutation,
+}: MatchRowProps) {
 	return (
 		<div
 			className="flex items-center gap-4 rounded-lg border p-4 md:gap-10"
@@ -107,7 +97,12 @@ export function MatchRow({ match }: MatchRowProps) {
 					<TeamShortName team={match.awayTeam} />
 				</TeamInfo>
 			</div>
-			<BetButtons matchBets={match.matchBets} matchId={match.id} />
+			<BetButtons
+				competitionId={competitionId}
+				matchBets={match.matchBets}
+				matchId={match.id}
+				placeBetMutation={placeBetMutation}
+			/>
 		</div>
 	);
 }

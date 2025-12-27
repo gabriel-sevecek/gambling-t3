@@ -71,9 +71,30 @@ export const competitionRouter = createTRPCRouter({
 									isActive: true,
 								},
 							},
-							matchBets: true,
 						},
 					},
+				},
+			});
+
+			return competition;
+		}),
+
+	getCompetitionMatchdayMatches: protectedProcedure
+		.input(z.object({ id: z.number() }))
+		.query(async ({ ctx, input }) => {
+			const competition = await ctx.db.competition.findFirst({
+				where: {
+					id: input.id,
+					competitionUsers: {
+						some: {
+							userId: ctx.session.user.id,
+							isActive: true,
+						},
+					},
+					isActive: true,
+				},
+				include: {
+					footballSeason: true,
 				},
 			});
 
@@ -102,8 +123,7 @@ export const competitionRouter = createTRPCRouter({
 			});
 
 			return {
-				...competition,
-				currentMatchdayMatches,
+				matches: currentMatchdayMatches,
 			};
 		}),
 
@@ -164,6 +184,35 @@ export const competitionRouter = createTRPCRouter({
 				},
 				data: {
 					isActive: false,
+				},
+			});
+		}),
+
+	placeBet: protectedProcedure
+		.input(
+			z.object({
+				matchId: z.number(),
+				competitionId: z.number(),
+				prediction: z.enum(["HOME", "DRAW", "AWAY"]),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await ctx.db.matchBet.upsert({
+				where: {
+					userId_footballMatchId_competitionId: {
+						userId: ctx.session.user.id,
+						footballMatchId: input.matchId,
+						competitionId: input.competitionId,
+					},
+				},
+				update: {
+					prediction: input.prediction,
+				},
+				create: {
+					userId: ctx.session.user.id,
+					footballMatchId: input.matchId,
+					competitionId: input.competitionId,
+					prediction: input.prediction,
 				},
 			});
 		}),

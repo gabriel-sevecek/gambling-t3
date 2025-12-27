@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/server";
-import { MatchRow } from "./_components/match-row";
+import { Matchday } from "./_components/matchday";
 
 export default async function CompetitionPage({
 	params,
@@ -14,21 +14,10 @@ export default async function CompetitionPage({
 		id: competitionId,
 	});
 
+	//TODO: Error handling
 	if (!competition) {
 		redirect("/dashboard");
 	}
-
-	const matchesByDate = competition.currentMatchdayMatches.reduce(
-		(acc, match) => {
-			const dateKey = match.date.toDateString();
-			if (!acc[dateKey]) {
-				acc[dateKey] = [];
-			}
-			acc[dateKey].push(match);
-			return acc;
-		},
-		{} as Record<string, typeof competition.currentMatchdayMatches>,
-	);
 
 	return (
 		<div className="rounded-lg border bg-card p-6">
@@ -44,16 +33,7 @@ export default async function CompetitionPage({
 				</TabsList>
 				<TabsContent value="matchday">
 					<div className="space-y-6">
-						{Object.entries(matchesByDate).map(([date, matches]) => (
-							<div key={date}>
-								<h3 className="mb-4 font-semibold text-lg">{date}</h3>
-								<div className="space-y-3">
-									{matches.map((match) => (
-										<MatchRow key={match.id} match={match} />
-									))}
-								</div>
-							</div>
-						))}
+						<Matchday competitionId={competitionId} />
 					</div>
 				</TabsContent>
 				<TabsContent value="table">Table info</TabsContent>

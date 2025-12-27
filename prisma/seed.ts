@@ -323,7 +323,9 @@ async function main() {
 	console.log(`🔗 Both users joined competition successfully`);
 	console.log(`⚽ Created ${teams.length} teams`);
 	console.log(`🏟 Created ${matches.length} matches for matchday 15`);
-	console.log(`🎲 Created bet: ${user.email} betting on Man United to win vs Tottenham`);
+	console.log(
+		`🎲 Created bet: ${user.email} betting on Man United to win vs Tottenham`,
+	);
 	console.log(`🔑 Login credentials: test@example.com / password`);
 	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
