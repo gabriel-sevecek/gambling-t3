@@ -143,11 +143,11 @@ model FootballMatch {
   season        FootballSeason  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   date          DateTime
   status        MatchStatus     @default(SCHEDULED)
-  matchday      Int?
-  homeTeamId    Int?            @map("home_team_id")
-  homeTeam      FootballTeam?   @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  awayTeamId    Int?            @map("away_team_id")
-  awayTeam      FootballTeam?   @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  matchday      Int
+  homeTeamId    Int             @map("home_team_id")
+  homeTeam      FootballTeam    @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId    Int             @map("away_team_id")
+  awayTeam      FootballTeam    @relation("AwayTeam", fields: [awayTeamId], references: [id])
   homeTeamGoals Int?            @map("home_team_goals")
   awayTeamGoals Int?            @map("away_team_goals")
   lastUpdated   DateTime        @map("last_updated")
