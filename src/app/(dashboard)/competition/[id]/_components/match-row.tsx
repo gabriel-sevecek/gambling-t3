@@ -81,11 +81,11 @@ function MatchResult({
 	);
 }
 
-function BetButtons({ 
-	matchBets, 
-	matchId 
-}: { 
-	matchBets: MatchBet[]; 
+function BetButtons({
+	matchBets,
+	matchId,
+}: {
+	matchBets: MatchBet[];
 	matchId: number;
 }) {
 	const bets = ["HOME", "DRAW", "AWAY"] as const;
