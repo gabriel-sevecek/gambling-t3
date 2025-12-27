@@ -250,8 +250,10 @@ async function main() {
 				matchday: 15,
 				homeTeamId: teams[0].id, // Arsenal
 				awayTeamId: teams[1].id, // Chelsea
+				homeTeamGoals: 1,
+				awayTeamGoals: 0,
 				date: new Date("2024-12-21T15:00:00Z"),
-				status: "SCHEDULED",
+				status: "FINISHED",
 				lastUpdated: new Date(),
 			},
 		}),
@@ -261,8 +263,10 @@ async function main() {
 				matchday: 15,
 				homeTeamId: teams[2].id, // Liverpool
 				awayTeamId: teams[3].id, // Man City
+				homeTeamGoals: 1,
+				awayTeamGoals: 3,
 				date: new Date("2024-12-21T17:30:00Z"),
-				status: "SCHEDULED",
+				status: "FINISHED",
 				lastUpdated: new Date(),
 			},
 		}),
@@ -307,7 +311,7 @@ async function main() {
 	console.log(`🏆 Created competition: ${competition.name}`);
 	console.log(`🔗 Both users joined competition successfully`);
 	console.log(`⚽ Created ${teams.length} teams`);
-	console.log(`🏟️ Created ${matches.length} matches for matchday 15`);
+	console.log(`🏟 Created ${matches.length} matches for matchday 15`);
 	console.log(`🔑 Login credentials: test@example.com / password`);
 	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
