@@ -81,10 +81,20 @@ function MatchResult({
 	);
 }
 
-function BetButtons({ matchBets }: { matchBets: MatchBet[] }) {
-	console.log(matchBets);
+function BetButtons({ 
+	matchBets, 
+	matchId 
+}: { 
+	matchBets: MatchBet[]; 
+	matchId: number;
+}) {
 	const bets = ["HOME", "DRAW", "AWAY"] as const;
 	const selectedBet = matchBets[0]?.prediction;
+
+	const handleBetClick = (bet: "HOME" | "DRAW" | "AWAY") => {
+		console.log(`Placing bet: ${bet} for match ${matchId}`);
+		// TODO: Add mutation call here
+	};
 
 	return (
 		<div className="flex gap-2">
@@ -96,6 +106,7 @@ function BetButtons({ matchBets }: { matchBets: MatchBet[] }) {
 							: "hover:bg-muted"
 					}`}
 					key={bet}
+					onClick={() => handleBetClick(bet)}
 					type="button"
 				>
 					{BET_DISPLAY[bet]}
@@ -135,7 +146,7 @@ export function MatchRow({ match }: MatchRowProps) {
 					<TeamShortName team={match.awayTeam} />
 				</TeamInfo>
 			</div>
-			<BetButtons matchBets={match.matchBets} />
+			<BetButtons matchBets={match.matchBets} matchId={match.id} />
 		</div>
 	);
 }
