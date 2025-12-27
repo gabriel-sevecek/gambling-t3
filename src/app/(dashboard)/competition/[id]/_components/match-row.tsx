@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Match, PlaceBetMutation } from "~/types/competition";
 import { BetButtons } from "./bet-buttons";
+import { BetDisplay } from "./bet-display";
 
 type Team = {
 	name: string;
@@ -49,6 +50,11 @@ function isFinished(match: Match): match is FinishedMatch {
 	);
 }
 
+function isMatchInPast(matchDate: Date): boolean {
+	const now = new Date();
+	return matchDate < now;
+}
+
 function MatchResult({
 	homeTeamGoals,
 	awayTeamGoals,
@@ -68,6 +74,8 @@ export function MatchRow({
 	competitionId,
 	placeBetMutation,
 }: MatchRowProps) {
+	const isPastMatch = isMatchInPast(match.date);
+
 	return (
 		<div
 			className="flex items-center gap-4 rounded-lg border p-4 md:gap-10"
@@ -97,12 +105,16 @@ export function MatchRow({
 					<TeamShortName team={match.awayTeam} />
 				</TeamInfo>
 			</div>
-			<BetButtons
-				competitionId={competitionId}
-				matchBets={match.matchBets}
-				matchId={match.id}
-				placeBetMutation={placeBetMutation}
-			/>
+			{isPastMatch ? (
+				<BetDisplay match={match} />
+			) : (
+				<BetButtons
+					competitionId={competitionId}
+					matchBets={match.matchBets}
+					matchId={match.id}
+					placeBetMutation={placeBetMutation}
+				/>
+			)}
 		</div>
 	);
 }
