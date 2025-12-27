@@ -305,6 +305,27 @@ async function main() {
 		}),
 	]);
 
+	// Create bets for test user on past matches
+	const arsenalVsChelseaMatch = matches[0]; // Arsenal vs Chelsea (Arsenal won 1-0)
+	await prisma.matchBet.create({
+		data: {
+			userId: user.id,
+			footballMatchId: arsenalVsChelseaMatch.id,
+			competitionId: competition.id,
+			prediction: "HOME", // Betting on Arsenal (home team) to win - CORRECT
+		},
+	});
+
+	const liverpoolVsManCityMatch = matches[1]; // Liverpool vs Man City (Man City won 1-3)
+	await prisma.matchBet.create({
+		data: {
+			userId: user.id,
+			footballMatchId: liverpoolVsManCityMatch.id,
+			competitionId: competition.id,
+			prediction: "HOME", // Betting on Liverpool (home team) to win - INCORRECT
+		},
+	});
+
 	// Create a bet for test user on Man United vs Tottenham match
 	const manUnitedVsTottenhamMatch = matches[2]; // Man United vs Tottenham
 	await prisma.matchBet.create({
@@ -323,6 +344,8 @@ async function main() {
 	console.log(`🔗 Both users joined competition successfully`);
 	console.log(`⚽ Created ${teams.length} teams`);
 	console.log(`🏟 Created ${matches.length} matches for matchday 15`);
+	console.log(`🎲 Created bet: ${user.email} betting on Arsenal to win vs Chelsea (CORRECT)`);
+	console.log(`🎲 Created bet: ${user.email} betting on Liverpool to win vs Man City (INCORRECT)`);
 	console.log(
 		`🎲 Created bet: ${user.email} betting on Man United to win vs Tottenham`,
 	);
