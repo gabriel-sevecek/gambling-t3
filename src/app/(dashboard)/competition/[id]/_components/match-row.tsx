@@ -15,6 +15,18 @@ type MatchRowProps = {
 	};
 };
 
+function TeamCrest({ team }: { team: MatchRowTeam }) {
+	return (
+		<Image
+			alt={`${team.name} crest`}
+			className="object-contain"
+			height={24}
+			src={team.crestUrl}
+			width={24}
+		/>
+	);
+}
+
 export function MatchRow({ match }: MatchRowProps) {
 	return (
 		<div
@@ -23,13 +35,7 @@ export function MatchRow({ match }: MatchRowProps) {
 		>
 			<div className="flex items-center gap-2">
 				<span className="font-medium">{match.homeTeam.tla}</span>
-				<Image
-					alt={`${match.homeTeam.name} crest`}
-					className="object-contain"
-					height={24}
-					src={match.homeTeam.crestUrl}
-					width={24}
-				/>
+				<TeamCrest team={match.homeTeam} />
 			</div>
 			<div className="font-mono text-sm">
 				{match.date.toLocaleTimeString([], {
@@ -39,13 +45,7 @@ export function MatchRow({ match }: MatchRowProps) {
 				})}
 			</div>
 			<div className="flex items-center gap-2">
-				<Image
-					alt={`${match.awayTeam.name} crest`}
-					className="object-contain"
-					height={24}
-					src={match.awayTeam.crestUrl}
-					width={24}
-				/>
+				<TeamCrest team={match.awayTeam} />
 				<span className="font-medium">{match.awayTeam.tla}</span>
 			</div>
 		</div>
