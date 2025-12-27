@@ -89,6 +89,12 @@ export const competitionRouter = createTRPCRouter({
 				include: {
 					homeTeam: true,
 					awayTeam: true,
+					matchBets: {
+						where: {
+							userId: ctx.session.user.id,
+							competitionId: input.id,
+						},
+					},
 				},
 				orderBy: {
 					date: "asc",
