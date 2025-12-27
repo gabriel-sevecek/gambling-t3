@@ -43,6 +43,10 @@ function TeamInfo({ children }: { children: React.ReactNode }) {
 	);
 }
 
+function TeamShortName({ team }: { team: Team }) {
+	return <span className="font-medium">{team.tla}</span>;
+}
+
 function isFinished(match: Match): match is FinishedMatch {
 	return (
 		match.status === "FINISHED" &&
@@ -65,34 +69,59 @@ function MatchResult({
 	);
 }
 
+function BetButtons({ selectedBet }: { selectedBet?: "1" | "X" | "2" }) {
+	const bets: Array<"1" | "X" | "2"> = ["1", "X", "2"];
+
+	return (
+		<div className="flex gap-2">
+			{bets.map((bet) => (
+				<button
+					className={`flex aspect-square w-6 cursor-pointer items-center justify-center rounded border text-sm ${
+						selectedBet === bet
+							? "bg-primary text-primary-foreground"
+							: "hover:bg-muted"
+					}`}
+					key={bet}
+					type="button"
+				>
+					{bet}
+				</button>
+			))}
+		</div>
+	);
+}
+
 export function MatchRow({ match }: MatchRowProps) {
 	return (
 		<div
-			className="flex items-center gap-4 rounded-lg border p-4"
+			className="flex items-center gap-4 rounded-lg border p-4 md:gap-10"
 			key={match.id}
 		>
-			<TeamInfo>
-				<span className="font-medium">{match.homeTeam.tla}</span>
-				<TeamCrest team={match.homeTeam} />
-			</TeamInfo>
-			{isFinished(match) ? (
-				<MatchResult
-					awayTeamGoals={match.awayTeamGoals}
-					homeTeamGoals={match.homeTeamGoals}
-				/>
-			) : (
-				<div className="rounded border px-2 py-1 text-sm">
-					{match.date.toLocaleTimeString([], {
-						hour: "2-digit",
-						minute: "2-digit",
-						hour12: false,
-					})}
-				</div>
-			)}
-			<TeamInfo>
-				<TeamCrest team={match.awayTeam} />
-				<span className="font-medium">{match.awayTeam.tla}</span>
-			</TeamInfo>
+			<div className="flex items-center gap-4">
+				<TeamInfo>
+					<TeamShortName team={match.homeTeam} />
+					<TeamCrest team={match.homeTeam} />
+				</TeamInfo>
+				{isFinished(match) ? (
+					<MatchResult
+						awayTeamGoals={match.awayTeamGoals}
+						homeTeamGoals={match.homeTeamGoals}
+					/>
+				) : (
+					<div className="rounded border px-2 py-1 text-sm">
+						{match.date.toLocaleTimeString([], {
+							hour: "2-digit",
+							minute: "2-digit",
+							hour12: false,
+						})}
+					</div>
+				)}
+				<TeamInfo>
+					<TeamCrest team={match.awayTeam} />
+					<TeamShortName team={match.awayTeam} />
+				</TeamInfo>
+			</div>
+			<BetButtons />
 		</div>
 	);
 }
