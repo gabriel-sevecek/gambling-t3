@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/server";
-import { MatchRow } from "./_components/match-card";
+import { MatchRow } from "./_components/match-row";
 
 export default async function CompetitionPage({
 	params,
