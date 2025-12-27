@@ -125,7 +125,7 @@ model FootballTeam {
   name        String
   shortName   String          @map("short_name")
   tla         String          @unique
-  crestUrl    String?         @map("crest_url")
+  crestUrl    String          @map("crest_url")
   lastUpdated DateTime        @map("last_updated")
   createdAt   DateTime        @default(now()) @map("created_at")
   updatedAt   DateTime        @updatedAt @map("updated_at")
