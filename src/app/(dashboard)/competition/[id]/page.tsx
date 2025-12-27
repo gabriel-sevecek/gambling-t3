@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/server";
+import { MatchRow } from "./_components/match-card";
 
 export default async function CompetitionPage({
 	params,
@@ -49,45 +49,7 @@ export default async function CompetitionPage({
 								<h3 className="mb-4 font-semibold text-lg">{date}</h3>
 								<div className="space-y-3">
 									{matches.map((match) => (
-										<div
-											className="flex items-center gap-4 rounded-lg border p-4"
-											key={match.id}
-										>
-											<div className="flex items-center gap-2">
-												<span className="font-medium">
-													{match.homeTeam?.tla}
-												</span>
-												{match.homeTeam?.crestUrl && (
-													<Image
-														alt={`${match.homeTeam.name} crest`}
-														className="object-contain"
-														height={24}
-														src={match.homeTeam.crestUrl}
-														width={24}
-													/>
-												)}
-											</div>
-											<div className="font-mono text-sm">
-												{match.date.toLocaleTimeString([], {
-													hour: "2-digit",
-													minute: "2-digit",
-												})}
-											</div>
-											<div className="flex items-center gap-2">
-												{match.awayTeam?.crestUrl && (
-													<Image
-														alt={`${match.awayTeam.name} crest`}
-														className="object-contain"
-														height={24}
-														src={match.awayTeam.crestUrl}
-														width={24}
-													/>
-												)}
-												<span className="font-medium">
-													{match.awayTeam?.tla}
-												</span>
-											</div>
-										</div>
+										<MatchRow key={match.id} match={match} />
 									))}
 								</div>
 							</div>
