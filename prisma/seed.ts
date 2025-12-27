@@ -274,6 +274,19 @@ async function main() {
 			data: {
 				seasonId: footballSeason.id,
 				matchday: 15,
+				homeTeamId: teams[6].id, // Burnley
+				awayTeamId: teams[8].id, // Brighton
+				homeTeamGoals: 2,
+				awayTeamGoals: 2,
+				date: new Date("2025-12-21T20:00:00Z"),
+				status: "FINISHED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
 				homeTeamId: teams[4].id, // Man United
 				awayTeamId: teams[5].id, // Tottenham
 				date: new Date("2026-02-22T14:00:00Z"),
@@ -285,20 +298,9 @@ async function main() {
 			data: {
 				seasonId: footballSeason.id,
 				matchday: 15,
-				homeTeamId: teams[6].id, // Burnley
-				awayTeamId: teams[7].id, // Crystal Palace
-				date: new Date("2026-02-22T16:30:00Z"),
-				status: "SCHEDULED",
-				lastUpdated: new Date(),
-			},
-		}),
-		prisma.footballMatch.create({
-			data: {
-				seasonId: footballSeason.id,
-				matchday: 15,
-				homeTeamId: teams[8].id, // Brighton
+				homeTeamId: teams[7].id, // Crystal Palace
 				awayTeamId: teams[9].id, // West Ham
-				date: new Date("2026-02-22T19:00:00Z"),
+				date: new Date("2026-02-22T16:30:00Z"),
 				status: "SCHEDULED",
 				lastUpdated: new Date(),
 			},
