@@ -305,6 +305,17 @@ async function main() {
 		}),
 	]);
 
+	// Create a bet for test user on Man United vs Tottenham match
+	const manUnitedVsTottenhamMatch = matches[2]; // Man United vs Tottenham
+	await prisma.matchBet.create({
+		data: {
+			userId: user.id,
+			footballMatchId: manUnitedVsTottenhamMatch.id,
+			competitionId: competition.id,
+			prediction: "HOME", // Betting on Man United (home team) to win
+		},
+	});
+
 	console.log("✅ Seeding completed!");
 	console.log(`👤 Created user: ${user.name} (${user.email})`);
 	console.log(`👤 Created user: ${user2.name} (${user2.email})`);
@@ -312,6 +323,7 @@ async function main() {
 	console.log(`🔗 Both users joined competition successfully`);
 	console.log(`⚽ Created ${teams.length} teams`);
 	console.log(`🏟 Created ${matches.length} matches for matchday 15`);
+	console.log(`🎲 Created bet: ${user.email} betting on Man United to win vs Tottenham`);
 	console.log(`🔑 Login credentials: test@example.com / password`);
 	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
