@@ -23,14 +23,14 @@ async function main() {
 		where: {
 			footballCompetitionId_startDate: {
 				footballCompetitionId: footballCompetition.id,
-				startDate: new Date("2024-08-17"),
+				startDate: new Date("2025-08-17"),
 			},
 		},
 		update: {},
 		create: {
 			footballCompetitionId: footballCompetition.id,
-			startDate: new Date("2024-08-17"),
-			endDate: new Date("2025-05-25"),
+			startDate: new Date("2025-08-17"),
+			endDate: new Date("2026-05-25"),
 			currentMatchday: 15,
 		},
 	});
@@ -48,7 +48,7 @@ async function main() {
 		create: {
 			name: "Piarg 25/26",
 			description:
-				"Predict the outcomes of Premier League matches for the 2024/25 season",
+				"Predict the outcomes of Premier League matches for the 2025/26 season",
 			footballSeasonId: footballSeason.id,
 			footballCompetitionId: footballCompetition.id,
 			isActive: true,
@@ -252,7 +252,7 @@ async function main() {
 				awayTeamId: teams[1].id, // Chelsea
 				homeTeamGoals: 1,
 				awayTeamGoals: 0,
-				date: new Date("2024-12-21T15:00:00Z"),
+				date: new Date("2025-12-21T15:00:00Z"),
 				status: "FINISHED",
 				lastUpdated: new Date(),
 			},
@@ -265,7 +265,7 @@ async function main() {
 				awayTeamId: teams[3].id, // Man City
 				homeTeamGoals: 1,
 				awayTeamGoals: 3,
-				date: new Date("2024-12-21T17:30:00Z"),
+				date: new Date("2025-12-21T17:30:00Z"),
 				status: "FINISHED",
 				lastUpdated: new Date(),
 			},
@@ -276,7 +276,7 @@ async function main() {
 				matchday: 15,
 				homeTeamId: teams[4].id, // Man United
 				awayTeamId: teams[5].id, // Tottenham
-				date: new Date("2024-12-22T14:00:00Z"),
+				date: new Date("2026-02-22T14:00:00Z"),
 				status: "SCHEDULED",
 				lastUpdated: new Date(),
 			},
@@ -287,7 +287,7 @@ async function main() {
 				matchday: 15,
 				homeTeamId: teams[6].id, // Burnley
 				awayTeamId: teams[7].id, // Crystal Palace
-				date: new Date("2024-12-22T16:30:00Z"),
+				date: new Date("2026-02-22T16:30:00Z"),
 				status: "SCHEDULED",
 				lastUpdated: new Date(),
 			},
@@ -298,7 +298,7 @@ async function main() {
 				matchday: 15,
 				homeTeamId: teams[8].id, // Brighton
 				awayTeamId: teams[9].id, // West Ham
-				date: new Date("2024-12-22T19:00:00Z"),
+				date: new Date("2026-02-22T19:00:00Z"),
 				status: "SCHEDULED",
 				lastUpdated: new Date(),
 			},
