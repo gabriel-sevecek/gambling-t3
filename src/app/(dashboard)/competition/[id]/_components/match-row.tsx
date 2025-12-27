@@ -1,9 +1,20 @@
 import Image from "next/image";
 
+const BET_DISPLAY = {
+	HOME: "1",
+	DRAW: "X",
+	AWAY: "2",
+} as const;
+
 type Team = {
 	name: string;
 	tla: string;
 	crestUrl: string;
+};
+
+type MatchBet = {
+	id: number;
+	prediction: "HOME" | "DRAW" | "AWAY";
 };
 
 type Match = {
@@ -14,6 +25,7 @@ type Match = {
 	awayTeamGoals: number | null;
 	homeTeam: Team;
 	awayTeam: Team;
+	matchBets: MatchBet[];
 };
 
 type FinishedMatch = Match & {
@@ -69,8 +81,10 @@ function MatchResult({
 	);
 }
 
-function BetButtons({ selectedBet }: { selectedBet?: "1" | "X" | "2" }) {
-	const bets: Array<"1" | "X" | "2"> = ["1", "X", "2"];
+function BetButtons({ matchBets }: { matchBets: MatchBet[] }) {
+	console.log(matchBets);
+	const bets = ["HOME", "DRAW", "AWAY"] as const;
+	const selectedBet = matchBets[0]?.prediction;
 
 	return (
 		<div className="flex gap-2">
@@ -84,7 +98,7 @@ function BetButtons({ selectedBet }: { selectedBet?: "1" | "X" | "2" }) {
 					key={bet}
 					type="button"
 				>
-					{bet}
+					{BET_DISPLAY[bet]}
 				</button>
 			))}
 		</div>
@@ -121,7 +135,7 @@ export function MatchRow({ match }: MatchRowProps) {
 					<TeamShortName team={match.awayTeam} />
 				</TeamInfo>
 			</div>
-			<BetButtons />
+			<BetButtons matchBets={match.matchBets} />
 		</div>
 	);
 }
