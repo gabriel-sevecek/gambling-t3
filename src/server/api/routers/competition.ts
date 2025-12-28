@@ -313,13 +313,33 @@ export const competitionRouter = createTRPCRouter({
 				where: whereClause,
 				take: input.limit + 1,
 				orderBy: [{ date: "asc" }, { id: "asc" }],
+				include: {
+					homeTeam: true,
+					awayTeam: true,
+					matchBets: {
+						where: {
+							competitionId: input.competitionId,
+							userId: ctx.session.user.id,
+						},
+					},
+				},
 			});
 
 			const hasNextPage = matches.length > input.limit;
 			const items = hasNextPage ? matches.slice(0, -1) : matches;
 
+			const processedMatches = items.map((match) => {
+				const currentUserBet = match.matchBets[0] || null;
+				const { matchBets: _, ...matchWithoutBets } = match;
+
+				return {
+					...matchWithoutBets,
+					currentUserBet,
+				};
+			});
+
 			return {
-				matches: items,
+				matches: processedMatches,
 				nextCursor: hasNextPage
 					? `${items[items.length - 1]!.date.toISOString()}_${items[items.length - 1]!.id}`
 					: null,
