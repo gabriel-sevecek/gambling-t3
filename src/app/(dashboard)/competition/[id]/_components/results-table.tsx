@@ -35,7 +35,7 @@ function BetResultCell({
 }) {
 	if (!bet) {
 		return (
-			<div className="flex h-6 w-10 items-center justify-center rounded bg-gray-100 text-gray-600 text-xs">
+			<div className="flex h-6 w-5 items-center justify-center rounded bg-gray-100 text-gray-600 text-xs">
 				-
 			</div>
 		);
@@ -50,11 +50,11 @@ function BetResultCell({
 				: "bg-gray-100 text-gray-600";
 
 	const displayText =
-		bet.prediction === "HOME" ? "H" : bet.prediction === "AWAY" ? "A" : "D";
+		bet.prediction === "HOME" ? "1" : bet.prediction === "AWAY" ? "2" : "X";
 
 	return (
 		<div
-			className={`flex h-6 w-10 items-center justify-center rounded font-medium text-xs ${bgColor}`}
+			className={`flex h-6 w-5 items-center justify-center rounded font-medium text-xs ${bgColor}`}
 		>
 			{displayText}
 		</div>
@@ -74,21 +74,23 @@ export function ResultsTable({ matches }: ResultsTableProps) {
 		<div className="overflow-x-auto">
 			<div className="min-w-fit">
 				<div className="sticky top-0 z-10 flex bg-background">
-					<div className="flex w-64 shrink-0 items-center border-r border-b bg-background px-4 py-3">
+					<div className="flex w-48 shrink-0 items-center border-r border-b bg-background px-4 py-3">
 						<span className="font-medium text-sm">Match</span>
 					</div>
 					<div className="flex">
 						{allUsers.map((user) => (
 							<div
-								className="flex w-16 shrink-0 flex-col items-center border-r border-b bg-background px-2 py-2"
+								className="flex w-8 shrink-0 flex-col items-center border-r border-b bg-background px-2 py-2"
 								key={user.id}
 							>
 								<Avatar className="size-6">
 									<AvatarFallback className="text-xs">
-										{user.name?.charAt(0) ?? "?"}
+										{user.name.charAt(0)}
 									</AvatarFallback>
 								</Avatar>
-								<span className="mt-1 truncate text-xs">{user.name}</span>
+								<span className="mt-1 truncate text-xs">
+									{user.name.split(" ")[0]}
+								</span>
 							</div>
 						))}
 					</div>
@@ -106,7 +108,7 @@ export function ResultsTable({ matches }: ResultsTableProps) {
 
 						return (
 							<div className="flex" key={match.id}>
-								<div className="flex w-64 shrink-0 flex-col border-r px-4 py-3">
+								<div className="flex w-48 shrink-0 flex-col border-r px-4 py-3">
 									<div className="flex items-center gap-2 text-sm">
 										<div className="flex items-center gap-1">
 											<Image
@@ -139,7 +141,7 @@ export function ResultsTable({ matches }: ResultsTableProps) {
 								<div className="flex">
 									{allUsers.map((user) => (
 										<div
-											className="flex w-16 shrink-0 items-center justify-center border-r py-3"
+											className="flex w-8 shrink-0 items-center justify-center border-r py-3"
 											key={user.id}
 										>
 											<BetResultCell
