@@ -240,9 +240,119 @@ async function main() {
 				lastUpdated: new Date(),
 			},
 		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "NEW" },
+			update: {},
+			create: {
+				name: "Newcastle United FC",
+				shortName: "Newcastle",
+				tla: "NEW",
+				crestUrl: "https://crests.football-data.org/67.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "AVL" },
+			update: {},
+			create: {
+				name: "Aston Villa FC",
+				shortName: "Aston Villa",
+				tla: "AVL",
+				crestUrl: "https://crests.football-data.org/58.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "EVE" },
+			update: {},
+			create: {
+				name: "Everton FC",
+				shortName: "Everton",
+				tla: "EVE",
+				crestUrl: "https://crests.football-data.org/62.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "FUL" },
+			update: {},
+			create: {
+				name: "Fulham FC",
+				shortName: "Fulham",
+				tla: "FUL",
+				crestUrl: "https://crests.football-data.org/63.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "LEI" },
+			update: {},
+			create: {
+				name: "Leicester City FC",
+				shortName: "Leicester",
+				tla: "LEI",
+				crestUrl: "https://crests.football-data.org/338.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "WOL" },
+			update: {},
+			create: {
+				name: "Wolverhampton Wanderers FC",
+				shortName: "Wolves",
+				tla: "WOL",
+				crestUrl: "https://crests.football-data.org/76.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "SOU" },
+			update: {},
+			create: {
+				name: "Southampton FC",
+				shortName: "Southampton",
+				tla: "SOU",
+				crestUrl: "https://crests.football-data.org/340.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "BRE" },
+			update: {},
+			create: {
+				name: "Brentford FC",
+				shortName: "Brentford",
+				tla: "BRE",
+				crestUrl: "https://crests.football-data.org/402.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "NFO" },
+			update: {},
+			create: {
+				name: "Nottingham Forest FC",
+				shortName: "Nottingham",
+				tla: "NFO",
+				crestUrl: "https://crests.football-data.org/351.png",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballTeam.upsert({
+			where: { tla: "BOU" },
+			update: {},
+			create: {
+				name: "AFC Bournemouth",
+				shortName: "Bournemouth",
+				tla: "BOU",
+				crestUrl: "https://crests.football-data.org/1044.png",
+				lastUpdated: new Date(),
+			},
+		}),
 	]);
 
-	// Create 5 matches for matchday 15
+	// Create matches for matchday 15
 	const matches = await Promise.all([
 		prisma.footballMatch.create({
 			data: {
@@ -305,6 +415,175 @@ async function main() {
 				lastUpdated: new Date(),
 			},
 		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[10].id, // Newcastle
+				awayTeamId: teams[11].id, // Aston Villa
+				date: new Date("2026-02-21T12:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[12].id, // Everton
+				awayTeamId: teams[13].id, // Fulham
+				date: new Date("2026-02-21T15:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[14].id, // Leicester
+				awayTeamId: teams[15].id, // Wolves
+				date: new Date("2026-02-21T17:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[16].id, // Southampton
+				awayTeamId: teams[17].id, // Brentford
+				date: new Date("2026-02-22T12:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 15,
+				homeTeamId: teams[18].id, // Nottingham
+				awayTeamId: teams[19].id, // Bournemouth
+				date: new Date("2026-02-22T17:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+	]);
+
+	// Create matches for matchday 16 (following weekend)
+	const matchday16Matches = await Promise.all([
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[1].id, // Chelsea
+				awayTeamId: teams[10].id, // Newcastle
+				date: new Date("2026-02-28T12:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[3].id, // Man City
+				awayTeamId: teams[0].id, // Arsenal
+				date: new Date("2026-02-28T15:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[5].id, // Tottenham
+				awayTeamId: teams[2].id, // Liverpool
+				date: new Date("2026-02-28T17:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[9].id, // West Ham
+				awayTeamId: teams[4].id, // Man United
+				date: new Date("2026-03-01T14:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[8].id, // Brighton
+				awayTeamId: teams[7].id, // Crystal Palace
+				date: new Date("2026-03-01T16:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[11].id, // Aston Villa
+				awayTeamId: teams[6].id, // Burnley
+				date: new Date("2026-02-28T12:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[13].id, // Fulham
+				awayTeamId: teams[14].id, // Leicester
+				date: new Date("2026-02-28T15:00:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[15].id, // Wolves
+				awayTeamId: teams[12].id, // Everton
+				date: new Date("2026-02-28T17:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[17].id, // Brentford
+				awayTeamId: teams[18].id, // Nottingham
+				date: new Date("2026-03-01T12:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
+		prisma.footballMatch.create({
+			data: {
+				seasonId: footballSeason.id,
+				matchday: 16,
+				homeTeamId: teams[19].id, // Bournemouth
+				awayTeamId: teams[16].id, // Southampton
+				date: new Date("2026-03-01T17:30:00Z"),
+				status: "SCHEDULED",
+				lastUpdated: new Date(),
+			},
+		}),
 	]);
 
 	// Create bets for test user on past matches
@@ -335,6 +614,7 @@ async function main() {
 	console.log(`🔗 Both users joined competition successfully`);
 	console.log(`⚽ Created ${teams.length} teams`);
 	console.log(`🏟 Created ${matches.length} matches for matchday 15`);
+	console.log(`🏟 Created ${matchday16Matches.length} matches for matchday 16`);
 	console.log(
 		`🎲 Created bet: ${user.email} betting on Arsenal to win vs Chelsea (CORRECT)`,
 	);
