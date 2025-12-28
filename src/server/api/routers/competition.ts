@@ -270,47 +270,25 @@ export const competitionRouter = createTRPCRouter({
 
 			const now = new Date();
 
-			let cursorDate: Date | undefined;
 			let cursorId: number | undefined;
 
 			if (input.cursor) {
 				try {
-					const [dateStr, idStr] = input.cursor.split("_");
-					if (dateStr && idStr) {
-						cursorDate = new Date(dateStr);
-						cursorId = parseInt(idStr, 10);
-					}
+					cursorId = parseInt(input.cursor, 10);
 				} catch {
 					// Invalid cursor, ignore and start from beginning
 				}
 			}
 
-			const whereClause: any = {
-				seasonId: competition.footballSeasonId,
-				date: {
-					gt: now,
-				},
-			};
-
-			if (cursorDate && cursorId) {
-				whereClause.OR = [
-					{
-						date: {
-							gt: cursorDate,
-						},
-					},
-					{
-						date: cursorDate,
-						id: {
-							gt: cursorId,
-						},
-					},
-				];
-				delete whereClause.date;
-			}
-
 			const matches = await ctx.db.footballMatch.findMany({
-				where: whereClause,
+				where: {
+					seasonId: competition.footballSeasonId,
+					date: {
+						gt: now,
+					},
+				},
+				cursor: cursorId ? { id: cursorId } : undefined,
+				skip: cursorId ? 1 : 0,
 				take: input.limit + 1,
 				orderBy: [{ date: "asc" }, { id: "asc" }],
 				include: {
@@ -341,7 +319,7 @@ export const competitionRouter = createTRPCRouter({
 			return {
 				matches: processedMatches,
 				nextCursor: hasNextPage
-					? `${items[items.length - 1]!.date.toISOString()}_${items[items.length - 1]!.id}`
+					? items[items.length - 1]!.id.toString()
 					: null,
 			};
 		}),
