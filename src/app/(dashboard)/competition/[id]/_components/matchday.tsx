@@ -38,17 +38,15 @@ export function Matchday({ competitionId }: MatchdayProps) {
 							if (match.id === matchId) {
 								return {
 									...match,
-									matchBets: [
-										{
-											id: 0,
-											competitionId,
-											createdAt: new Date(),
-											updatedAt: new Date(),
-											userId: "",
-											footballMatchId: matchId,
-											prediction,
-										},
-									],
+									currentUserBet: {
+										id: 0,
+										competitionId,
+										createdAt: new Date(),
+										updatedAt: new Date(),
+										userId: "",
+										footballMatchId: matchId,
+										prediction,
+									},
 								};
 							}
 							return match;

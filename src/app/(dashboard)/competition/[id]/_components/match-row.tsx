@@ -110,7 +110,7 @@ export function MatchRow({
 			) : (
 				<BetButtons
 					competitionId={competitionId}
-					matchBets={match.matchBets}
+					currentUserBet={match.currentUserBet}
 					matchId={match.id}
 					placeBetMutation={placeBetMutation}
 				/>

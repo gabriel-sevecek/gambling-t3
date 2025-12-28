@@ -31,7 +31,7 @@ function getPredictionText(prediction: "HOME" | "DRAW" | "AWAY"): string {
 }
 
 export function BetDisplay({ match }: BetDisplayProps) {
-	const bet = match.matchBets[0];
+	const bet = match.currentUserBet;
 
 	if (!bet) {
 		return <div className="text-muted-foreground text-sm">No bet placed</div>;

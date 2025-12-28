@@ -8,18 +8,18 @@ const BET_DISPLAY = {
 } as const;
 
 export function BetButtons({
-	matchBets,
+	currentUserBet,
 	matchId,
 	competitionId,
 	placeBetMutation,
 }: {
-	matchBets: Match["matchBets"];
+	currentUserBet: Match["currentUserBet"];
 	matchId: number;
 	competitionId: number;
 	placeBetMutation: PlaceBetMutation;
 }) {
 	const bets = ["HOME", "DRAW", "AWAY"] as const;
-	const selectedBet = matchBets[0]?.prediction;
+	const selectedBet = currentUserBet?.prediction;
 	const isLoading = placeBetMutation.isPending;
 
 	const handleBetClick = (bet: "HOME" | "DRAW" | "AWAY") => {

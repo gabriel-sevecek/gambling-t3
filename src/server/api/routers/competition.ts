@@ -112,7 +112,6 @@ export const competitionRouter = createTRPCRouter({
 					awayTeam: true,
 					matchBets: {
 						where: {
-							userId: ctx.session.user.id,
 							competitionId: input.id,
 						},
 					},
@@ -122,8 +121,31 @@ export const competitionRouter = createTRPCRouter({
 				},
 			});
 
+			const now = new Date();
+
+			const processedMatches = currentMatchdayMatches.map((match) => {
+				const currentUserBet = match.matchBets.find(
+					(bet) => bet.userId === ctx.session.user.id,
+				);
+
+				const otherUsersBets =
+					match.date <= now
+						? match.matchBets.filter(
+								(bet) => bet.userId !== ctx.session.user.id,
+							)
+						: [];
+
+				const { matchBets: _, ...matchWithoutBets } = match;
+
+				return {
+					...matchWithoutBets,
+					currentUserBet: currentUserBet || null,
+					otherUsersBets,
+				};
+			});
+
 			return {
-				matches: currentMatchdayMatches,
+				matches: processedMatches,
 			};
 		}),
 
