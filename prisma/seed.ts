@@ -341,6 +341,70 @@ async function main() {
 	console.log(
 		`🎲 Created bet: ${user.email} betting on Liverpool to win vs Man City (INCORRECT)`,
 	);
+
+	// Create bets for user2 on all matches
+	await prisma.matchBet.create({
+		data: {
+			userId: user2.id,
+			footballMatchId: arsenalVsChelseaMatch.id,
+			competitionId: competition.id,
+			prediction: "AWAY", // Betting on Chelsea to win - INCORRECT
+		},
+	});
+
+	await prisma.matchBet.create({
+		data: {
+			userId: user2.id,
+			footballMatchId: liverpoolVsManCityMatch.id,
+			competitionId: competition.id,
+			prediction: "AWAY", // Betting on Man City to win - CORRECT
+		},
+	});
+
+	const burnleyVsBrightonMatch = matches[2]; // Burnley vs Brighton (2-2 draw)
+	await prisma.matchBet.create({
+		data: {
+			userId: user2.id,
+			footballMatchId: burnleyVsBrightonMatch.id,
+			competitionId: competition.id,
+			prediction: "DRAW", // Betting on draw - CORRECT
+		},
+	});
+
+	const manUnitedVsTottenhamMatch = matches[3]; // Man United vs Tottenham (scheduled)
+	await prisma.matchBet.create({
+		data: {
+			userId: user2.id,
+			footballMatchId: manUnitedVsTottenhamMatch.id,
+			competitionId: competition.id,
+			prediction: "HOME", // Betting on Man United to win
+		},
+	});
+
+	const crystalPalaceVsWestHamMatch = matches[4]; // Crystal Palace vs West Ham (scheduled)
+	await prisma.matchBet.create({
+		data: {
+			userId: user2.id,
+			footballMatchId: crystalPalaceVsWestHamMatch.id,
+			competitionId: competition.id,
+			prediction: "AWAY", // Betting on West Ham to win
+		},
+	});
+	console.log(
+		`🎲 Created bet: ${user2.email} betting on Chelsea to win vs Arsenal (INCORRECT)`,
+	);
+	console.log(
+		`🎲 Created bet: ${user2.email} betting on Man City to win vs Liverpool (CORRECT)`,
+	);
+	console.log(
+		`🎲 Created bet: ${user2.email} betting on draw for Burnley vs Brighton (CORRECT)`,
+	);
+	console.log(
+		`🎲 Created bet: ${user2.email} betting on Man United to win vs Tottenham`,
+	);
+	console.log(
+		`🎲 Created bet: ${user2.email} betting on West Ham to win vs Crystal Palace`,
+	);
 	console.log(`🔑 Login credentials: test@example.com / password`);
 	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
