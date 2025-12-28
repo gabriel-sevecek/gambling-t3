@@ -75,62 +75,15 @@ function processFutureMatches(
 	});
 }
 
-function buildMatchQuery(
-	db: PrismaClient,
-	seasonId: number,
-	dateFilter: { lt: Date } | { gt: Date },
-	orderBy:
-		| [{ date: "asc" }, { id: "asc" }]
-		| [{ date: "desc" }, { id: "desc" }],
-	cursorId: number | undefined,
-	limit: number,
-	includeOptions: {
-		matchBets?: {
-			where: {
-				competitionId: number;
-				userId?: string;
-			};
-			include?: {
-				user: {
-					select: {
-						id: true;
-						name: true;
-						image: true;
-					};
-				};
-			};
-		};
-	},
-) {
-	return db.footballMatch.findMany({
-		where: {
-			seasonId,
-			date: dateFilter,
-		},
-		cursor: cursorId ? { id: cursorId } : undefined,
-		skip: cursorId ? 1 : 0,
-		take: limit + 1,
-		orderBy,
-		include: {
-			homeTeam: true,
-			awayTeam: true,
-			...includeOptions,
-		},
-	});
-}
-
-function buildPaginationResult<T extends { id: number }, P>(
+function createNextCursor<T extends { id: number }>(
 	items: T[],
 	limit: number,
-	processedItems: P[],
-) {
+): string | null {
 	const hasNextPage = items.length > limit;
 	const finalItems = hasNextPage ? items.slice(0, -1) : items;
+	const lastElementAsString = finalItems.at(-1)?.id.toString();
 
-	return {
-		matches: processedItems,
-		nextCursor: hasNextPage ? (finalItems.at(-1)?.id.toString() ?? null) : null,
-	};
+	return hasNextPage ? (lastElementAsString ?? null) : null;
 }
 
 export const competitionRouter = createTRPCRouter({
@@ -230,14 +183,18 @@ export const competitionRouter = createTRPCRouter({
 
 			const cursorId = parseCursor(input.cursor);
 
-			const matches = await buildMatchQuery(
-				ctx.db,
-				competition.footballSeasonId,
-				{ lt: now },
-				[{ date: "desc" }, { id: "desc" }],
-				cursorId,
-				input.limit,
-				{
+			const matches = await ctx.db.footballMatch.findMany({
+				where: {
+					seasonId: competition.footballSeasonId,
+					date: { lt: now },
+				},
+				cursor: cursorId ? { id: cursorId } : undefined,
+				skip: cursorId ? 1 : 0,
+				take: input.limit + 1,
+				orderBy: [{ date: "desc" }, { id: "desc" }],
+				include: {
+					homeTeam: true,
+					awayTeam: true,
 					matchBets: {
 						where: {
 							competitionId: input.competitionId,
@@ -253,12 +210,15 @@ export const competitionRouter = createTRPCRouter({
 						},
 					},
 				},
-			);
+			});
 
-			const items =
+			const pageOfMatches =
 				matches.length > input.limit ? matches.slice(0, -1) : matches;
 
-			return buildPaginationResult(matches, input.limit, items);
+			return {
+				matches: pageOfMatches,
+				nextCursor: createNextCursor(matches, input.limit),
+			};
 		}),
 
 	getAvailableCompetitions: publicProcedure.query(async ({ ctx }) => {
@@ -374,14 +334,18 @@ export const competitionRouter = createTRPCRouter({
 
 			const cursorId = parseCursor(input.cursor);
 
-			const matches = await buildMatchQuery(
-				ctx.db,
-				competition.footballSeasonId,
-				{ gt: now },
-				[{ date: "asc" }, { id: "asc" }],
-				cursorId,
-				input.limit,
-				{
+			const matches = await ctx.db.footballMatch.findMany({
+				where: {
+					seasonId: competition.footballSeasonId,
+					date: { gt: now },
+				},
+				cursor: cursorId ? { id: cursorId } : undefined,
+				skip: cursorId ? 1 : 0,
+				take: input.limit + 1,
+				orderBy: [{ date: "asc" }, { id: "asc" }],
+				include: {
+					homeTeam: true,
+					awayTeam: true,
 					matchBets: {
 						where: {
 							competitionId: input.competitionId,
@@ -389,12 +353,15 @@ export const competitionRouter = createTRPCRouter({
 						},
 					},
 				},
-			);
+			});
 
-			const items =
+			const pageOfMatches =
 				matches.length > input.limit ? matches.slice(0, -1) : matches;
-			const processedMatches = processFutureMatches(items);
+			const processedMatches = processFutureMatches(pageOfMatches);
 
-			return buildPaginationResult(matches, input.limit, processedMatches);
+			return {
+				matches: processedMatches,
+				nextCursor: createNextCursor(matches, input.limit),
+			};
 		}),
 });

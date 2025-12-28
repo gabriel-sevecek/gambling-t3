@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/server";
 import { Fixtures } from "./_components/fixtures";
+import { Results } from "./_components/results";
 
 export default async function CompetitionPage({
 	params,
@@ -28,7 +29,7 @@ export default async function CompetitionPage({
 						Fixtures
 					</TabsTrigger>
 					<TabsTrigger className="cursor-pointer" value="table">
-						Table
+						Results
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="fixtures">
@@ -36,7 +37,11 @@ export default async function CompetitionPage({
 						<Fixtures competitionId={competitionId} />
 					</div>
 				</TabsContent>
-				<TabsContent value="table">Table info</TabsContent>
+				<TabsContent value="table">
+					<div className="space-y-6">
+						<Results competitionId={competitionId} />
+					</div>
+				</TabsContent>
 			</Tabs>
 		</div>
 	);
