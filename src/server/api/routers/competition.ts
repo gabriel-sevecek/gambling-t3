@@ -238,4 +238,58 @@ export const competitionRouter = createTRPCRouter({
 				},
 			});
 		}),
+
+	getCompetitionFutureMatches: protectedProcedure
+		.input(
+			z.object({
+				competitionId: z.number(),
+				cursor: z.string().optional(),
+				limit: z.number().min(1).max(50).default(10),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const competition = await ctx.db.competition.findFirst({
+				where: {
+					id: input.competitionId,
+					competitionUsers: {
+						some: {
+							userId: ctx.session.user.id,
+							isActive: true,
+						},
+					},
+					isActive: true,
+				},
+				include: {
+					footballSeason: true,
+				},
+			});
+
+			if (!competition) {
+				return null;
+			}
+
+			const now = new Date();
+
+			const matches = await ctx.db.footballMatch.findMany({
+				where: {
+					seasonId: competition.footballSeasonId,
+					date: {
+						gt: now,
+					},
+				},
+				take: input.limit + 1,
+				orderBy: [
+					{ date: "asc" },
+					{ id: "asc" },
+				],
+			});
+
+			const hasNextPage = matches.length > input.limit;
+			const items = hasNextPage ? matches.slice(0, -1) : matches;
+
+			return {
+				matches: items,
+				nextCursor: hasNextPage ? `${items[items.length - 1]!.date.toISOString()}_${items[items.length - 1]!.id}` : null,
+			};
+		}),
 });
