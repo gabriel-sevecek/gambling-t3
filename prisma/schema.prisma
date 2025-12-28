@@ -161,6 +161,7 @@ model FootballMatch {
   @@index([homeTeamId])
   @@index([awayTeamId])
   @@index([matchday])
+  @@index([date, id])
   @@map("football_matches")
 }
 
