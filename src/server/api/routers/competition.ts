@@ -275,7 +275,7 @@ export const competitionRouter = createTRPCRouter({
 
 			if (input.cursor) {
 				try {
-					const [dateStr, idStr] = input.cursor.split('_');
+					const [dateStr, idStr] = input.cursor.split("_");
 					if (dateStr && idStr) {
 						cursorDate = new Date(dateStr);
 						cursorId = parseInt(idStr, 10);
@@ -312,10 +312,7 @@ export const competitionRouter = createTRPCRouter({
 			const matches = await ctx.db.footballMatch.findMany({
 				where: whereClause,
 				take: input.limit + 1,
-				orderBy: [
-					{ date: "asc" },
-					{ id: "asc" },
-				],
+				orderBy: [{ date: "asc" }, { id: "asc" }],
 			});
 
 			const hasNextPage = matches.length > input.limit;
@@ -323,7 +320,9 @@ export const competitionRouter = createTRPCRouter({
 
 			return {
 				matches: items,
-				nextCursor: hasNextPage ? `${items[items.length - 1]!.date.toISOString()}_${items[items.length - 1]!.id}` : null,
+				nextCursor: hasNextPage
+					? `${items[items.length - 1]!.date.toISOString()}_${items[items.length - 1]!.id}`
+					: null,
 			};
 		}),
 });
