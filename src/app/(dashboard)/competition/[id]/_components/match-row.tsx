@@ -78,7 +78,7 @@ export function MatchRow({
 
 	return (
 		<div
-			className="flex items-center gap-4 rounded-lg border p-3 md:gap-6"
+			className="flex items-center gap-4 rounded-lg border p-2 md:gap-6"
 			key={match.id}
 		>
 			<div className="flex items-center gap-2">
