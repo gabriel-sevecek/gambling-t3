@@ -20,7 +20,7 @@ export default async function CompetitionPage({
 	}
 
 	return (
-		<div className="rounded-lg border bg-card p-6">
+		<div className="rounded-lg border bg-card p-4">
 			<h1 className="mb-6 font-bold text-2xl">{competition.name}</h1>
 			<Tabs defaultValue="matchday">
 				<TabsList>

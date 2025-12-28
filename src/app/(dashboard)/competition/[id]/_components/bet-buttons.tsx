@@ -33,10 +33,10 @@ export function BetButtons({
 	};
 
 	return (
-		<div className="flex gap-2">
+		<div className="flex gap-1">
 			{bets.map((bet) => (
 				<button
-					className={`flex aspect-square w-6 items-center justify-center rounded text-sm transition-colors ${
+					className={`flex aspect-square w-5 items-center justify-center rounded text-xs transition-colors ${
 						selectedBet === bet
 							? "border-primary bg-primary text-primary-foreground"
 							: "border hover:bg-muted"

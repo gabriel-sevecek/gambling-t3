@@ -34,7 +34,7 @@ export function BetDisplay({ match }: BetDisplayProps) {
 	const bet = match.currentUserBet;
 
 	if (!bet) {
-		return <div className="text-muted-foreground text-sm">-</div>;
+		return <div className="text-muted-foreground text-xs">-</div>;
 	}
 
 	const result = getPredictionResult(
@@ -51,7 +51,7 @@ export function BetDisplay({ match }: BetDisplayProps) {
 				: "text-muted-foreground";
 
 	return (
-		<div className={`font-medium text-sm ${textColorClass}`}>
+		<div className={`font-medium text-xs ${textColorClass}`}>
 			{getPredictionText(bet.prediction)}
 		</div>
 	);

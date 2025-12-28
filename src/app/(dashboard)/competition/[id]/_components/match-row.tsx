@@ -25,21 +25,21 @@ function TeamCrest({ team }: { team: Team }) {
 		<Image
 			alt={`${team.name} crest`}
 			className="object-contain"
-			height={24}
+			height={18}
 			src={team.crestUrl}
-			width={24}
+			width={18}
 		/>
 	);
 }
 
 function TeamInfo({ children }: { children: React.ReactNode }) {
 	return (
-		<div className="flex w-[60px] justify-between gap-[2px]">{children}</div>
+		<div className="flex w-[50px] justify-between gap-[2px]">{children}</div>
 	);
 }
 
 function TeamShortName({ team }: { team: Team }) {
-	return <span className="font-medium">{team.tla}</span>;
+	return <span className="font-medium text-sm">{team.tla}</span>;
 }
 
 function isFinished(match: Match): match is FinishedMatch {
@@ -63,7 +63,7 @@ function MatchResult({
 	awayTeamGoals: number;
 }) {
 	return (
-		<div className="rounded bg-muted px-3 py-1">
+		<div className="text-xs rounded bg-muted px-1 py-1">
 			{`${homeTeamGoals} - ${awayTeamGoals}`}
 		</div>
 	);
@@ -78,10 +78,10 @@ export function MatchRow({
 
 	return (
 		<div
-			className="flex items-center gap-4 rounded-lg border p-4 md:gap-10"
+			className="flex items-center gap-4 rounded-lg border p-3 md:gap-6"
 			key={match.id}
 		>
-			<div className="flex items-center gap-4">
+			<div className="flex items-center gap-2">
 				<TeamInfo>
 					<TeamShortName team={match.homeTeam} />
 					<TeamCrest team={match.homeTeam} />
@@ -92,7 +92,7 @@ export function MatchRow({
 						homeTeamGoals={match.homeTeamGoals}
 					/>
 				) : (
-					<div className="rounded border px-2 py-1 text-sm">
+					<div className="rounded border px-0.5 py-0.5 text-xs">
 						{match.date.toLocaleTimeString([], {
 							hour: "2-digit",
 							minute: "2-digit",
