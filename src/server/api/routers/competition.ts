@@ -318,9 +318,7 @@ export const competitionRouter = createTRPCRouter({
 
 			return {
 				matches: processedMatches,
-				nextCursor: hasNextPage
-					? items[items.length - 1]!.id.toString()
-					: null,
+				nextCursor: hasNextPage ? (items.at(-1)?.id.toString() ?? null) : null,
 			};
 		}),
 });

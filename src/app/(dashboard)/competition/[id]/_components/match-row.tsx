@@ -63,7 +63,7 @@ function MatchResult({
 	awayTeamGoals: number;
 }) {
 	return (
-		<div className="text-xs rounded bg-muted px-1 py-1">
+		<div className="rounded bg-muted px-1 py-1 text-xs">
 			{`${homeTeamGoals} - ${awayTeamGoals}`}
 		</div>
 	);

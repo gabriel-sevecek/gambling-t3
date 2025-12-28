@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { api } from "~/trpc/server";
-import { Matchday } from "./_components/matchday";
+import { Fixtures } from "./_components/fixtures";
 
 export default async function CompetitionPage({
 	params,
@@ -22,18 +22,18 @@ export default async function CompetitionPage({
 	return (
 		<div className="rounded-lg border bg-card p-4">
 			<h1 className="mb-6 font-bold text-2xl">{competition.name}</h1>
-			<Tabs defaultValue="matchday">
+			<Tabs defaultValue="fixtures">
 				<TabsList>
-					<TabsTrigger className="cursor-pointer" value="matchday">
-						Matchday
+					<TabsTrigger className="cursor-pointer" value="fixtures">
+						Fixtures
 					</TabsTrigger>
 					<TabsTrigger className="cursor-pointer" value="table">
 						Table
 					</TabsTrigger>
 				</TabsList>
-				<TabsContent value="matchday">
+				<TabsContent value="fixtures">
 					<div className="space-y-6">
-						<Matchday competitionId={competitionId} />
+						<Fixtures competitionId={competitionId} />
 					</div>
 				</TabsContent>
 				<TabsContent value="table">Table info</TabsContent>

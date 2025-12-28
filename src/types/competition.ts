@@ -1,7 +1,7 @@
 import type { api, RouterOutputs } from "~/trpc/react";
 
 export type Match = NonNullable<
-	RouterOutputs["competition"]["getCompetitionMatchdayMatches"]
+	RouterOutputs["competition"]["getCompetitionFutureMatches"]
 >["matches"][number];
 
 export type PlaceBetMutation = ReturnType<
