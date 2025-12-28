@@ -270,13 +270,47 @@ export const competitionRouter = createTRPCRouter({
 
 			const now = new Date();
 
-			const matches = await ctx.db.footballMatch.findMany({
-				where: {
-					seasonId: competition.footballSeasonId,
-					date: {
-						gt: now,
-					},
+			let cursorDate: Date | undefined;
+			let cursorId: number | undefined;
+
+			if (input.cursor) {
+				try {
+					const [dateStr, idStr] = input.cursor.split('_');
+					if (dateStr && idStr) {
+						cursorDate = new Date(dateStr);
+						cursorId = parseInt(idStr, 10);
+					}
+				} catch {
+					// Invalid cursor, ignore and start from beginning
+				}
+			}
+
+			const whereClause: any = {
+				seasonId: competition.footballSeasonId,
+				date: {
+					gt: now,
 				},
+			};
+
+			if (cursorDate && cursorId) {
+				whereClause.OR = [
+					{
+						date: {
+							gt: cursorDate,
+						},
+					},
+					{
+						date: cursorDate,
+						id: {
+							gt: cursorId,
+						},
+					},
+				];
+				delete whereClause.date;
+			}
+
+			const matches = await ctx.db.footballMatch.findMany({
+				where: whereClause,
 				take: input.limit + 1,
 				orderBy: [
 					{ date: "asc" },
