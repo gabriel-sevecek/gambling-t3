@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import type { RouterOutputs } from "~/trpc/react";
 
@@ -107,7 +108,16 @@ export function ResultsTable({ matches }: ResultsTableProps) {
 							<div className="flex" key={match.id}>
 								<div className="flex w-64 shrink-0 flex-col border-r px-4 py-3">
 									<div className="flex items-center gap-2 text-sm">
-										<span className="font-medium">{match.homeTeam.tla}</span>
+										<div className="flex items-center gap-1">
+											<Image
+												alt={`${match.homeTeam.name} crest`}
+												className="object-contain"
+												height={16}
+												src={match.homeTeam.crestUrl}
+												width={16}
+											/>
+											<span className="font-medium">{match.homeTeam.tla}</span>
+										</div>
 										<div className="rounded bg-muted px-1 py-0.5 text-xs">
 											{match.homeTeamGoals} - {match.awayTeamGoals}
 										</div>
