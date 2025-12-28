@@ -34,7 +34,7 @@ export function BetDisplay({ match }: BetDisplayProps) {
 	const bet = match.currentUserBet;
 
 	if (!bet) {
-		return <div className="text-muted-foreground text-sm">No bet placed</div>;
+		return <div className="text-muted-foreground text-sm">-</div>;
 	}
 
 	const result = getPredictionResult(
