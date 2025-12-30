@@ -79,7 +79,7 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 		<div className="overflow-x-auto">
 			<div className="min-w-fit">
 				<div className="sticky top-0 z-10 flex bg-background">
-					<div className="flex w-48 shrink-0 items-center border-r border-b bg-background px-4 py-3">
+					<div className="sticky left-0 z-20 flex w-48 shrink-0 items-center border-r border-b bg-background px-4 py-3">
 						<span className="font-medium text-sm">Match</span>
 					</div>
 					<div className="flex">
@@ -121,7 +121,7 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 
 						return (
 							<div className="flex" key={match.id}>
-								<div className="flex w-48 shrink-0 flex-col border-r px-4 py-3">
+								<div className="sticky left-0 z-10 flex w-48 shrink-0 flex-col border-r bg-background px-4 py-3">
 									<div className="flex items-center gap-2 text-sm">
 										<div className="flex items-center gap-1">
 											<Image
