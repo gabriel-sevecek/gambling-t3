@@ -3,7 +3,18 @@ import { auth } from "../src/server/better-auth/config";
 
 const prisma = new PrismaClient();
 
-async function createUser(name: string, email: string, password: string, competitionId: number) {
+function getRandomPrediction(): "HOME" | "AWAY" | "DRAW" {
+	const predictions = ["HOME", "AWAY", "DRAW"] as const;
+	// biome-ignore lint/style/noNonNullAssertion: array access is always valid with random index 0-2
+	return predictions[Math.floor(Math.random() * predictions.length)]!;
+}
+
+async function createUser(
+	name: string,
+	email: string,
+	password: string,
+	competitionId: number,
+) {
 	const signUpResult = await auth.api.signUpEmail({
 		body: {
 			name,
@@ -92,9 +103,6 @@ async function main() {
 			isActive: true,
 		},
 	});
-
-	const user = await createUser("Test User", "test@example.com", "password", competition.id);
-	const user2 = await createUser("Jane Smith", "jane@example.com", "password", competition.id);
 
 	// Create teams
 	const teams = await Promise.all([
@@ -554,107 +562,60 @@ async function main() {
 		}),
 	]);
 
-	// Create bets for test user on past matches
-	const arsenalVsChelseaMatch = matches[0]; // Arsenal vs Chelsea (Arsenal won 1-0)
-	await prisma.matchBet.create({
-		data: {
-			userId: user.id,
-			footballMatchId: arsenalVsChelseaMatch.id,
-			competitionId: competition.id,
-			prediction: "HOME", // Betting on Arsenal (home team) to win - CORRECT
-		},
-	});
+	// All matches combined
+	const allMatches = [...matches, ...matchday16Matches];
 
-	const liverpoolVsManCityMatch = matches[1]; // Liverpool vs Man City (Man City won 1-3)
-	await prisma.matchBet.create({
-		data: {
-			userId: user.id,
-			footballMatchId: liverpoolVsManCityMatch.id,
-			competitionId: competition.id,
-			prediction: "HOME", // Betting on Liverpool (home team) to win - INCORRECT
-		},
-	});
+	// Create users
+	const usersData = [
+		{ name: "Test User", email: "test@example.com" },
+		{ name: "Jane Smith", email: "jane@example.com" },
+		{ name: "Alex Johnson", email: "alex@example.com" },
+		{ name: "Sarah Wilson", email: "sarah@example.com" },
+		{ name: "Mike Brown", email: "mike@example.com" },
+		{ name: "Emma Davis", email: "emma@example.com" },
+		{ name: "Chris Taylor", email: "chris@example.com" },
+		{ name: "Lisa Anderson", email: "lisa@example.com" },
+		{ name: "David Miller", email: "david@example.com" },
+		{ name: "Rachel Garcia", email: "rachel@example.com" },
+	];
+
+	const users = [];
+	for (const userData of usersData) {
+		const user = await createUser(
+			userData.name,
+			userData.email,
+			"password",
+			competition.id,
+		);
+		users.push(user);
+	}
+
+	// Create random bets for all users on all matches
+	for (const user of users) {
+		for (const match of allMatches) {
+			await prisma.matchBet.create({
+				data: {
+					userId: user.id,
+					footballMatchId: match.id,
+					competitionId: competition.id,
+					prediction: getRandomPrediction(),
+				},
+			});
+		}
+	}
 
 	console.log("✅ Seeding completed!");
-	console.log(`👤 Created user: ${user.name} (${user.email})`);
-	console.log(`👤 Created user: ${user2.name} (${user2.email})`);
+	console.log(`👤 Created ${users.length} users`);
 	console.log(`🏆 Created competition: ${competition.name}`);
-	console.log(`🔗 Both users joined competition successfully`);
+	console.log(`🔗 All users joined competition successfully`);
 	console.log(`⚽ Created ${teams.length} teams`);
 	console.log(`🏟 Created ${matches.length} matches for matchday 15`);
 	console.log(`🏟 Created ${matchday16Matches.length} matches for matchday 16`);
-	console.log(
-		`🎲 Created bet: ${user.email} betting on Arsenal to win vs Chelsea (CORRECT)`,
-	);
-	console.log(
-		`🎲 Created bet: ${user.email} betting on Liverpool to win vs Man City (INCORRECT)`,
-	);
-
-	// Create bets for user2 on all matches
-	await prisma.matchBet.create({
-		data: {
-			userId: user2.id,
-			footballMatchId: arsenalVsChelseaMatch.id,
-			competitionId: competition.id,
-			prediction: "AWAY", // Betting on Chelsea to win - INCORRECT
-		},
+	console.log(`🎲 Created ${users.length * allMatches.length} random bets`);
+	console.log(`🔑 All users have password: password`);
+	users.forEach((user) => {
+		console.log(`🔑 Login: ${user.email} / password`);
 	});
-
-	await prisma.matchBet.create({
-		data: {
-			userId: user2.id,
-			footballMatchId: liverpoolVsManCityMatch.id,
-			competitionId: competition.id,
-			prediction: "AWAY", // Betting on Man City to win - CORRECT
-		},
-	});
-
-	const burnleyVsBrightonMatch = matches[2]; // Burnley vs Brighton (2-2 draw)
-	await prisma.matchBet.create({
-		data: {
-			userId: user2.id,
-			footballMatchId: burnleyVsBrightonMatch.id,
-			competitionId: competition.id,
-			prediction: "DRAW", // Betting on draw - CORRECT
-		},
-	});
-
-	const manUnitedVsTottenhamMatch = matches[3]; // Man United vs Tottenham (scheduled)
-	await prisma.matchBet.create({
-		data: {
-			userId: user2.id,
-			footballMatchId: manUnitedVsTottenhamMatch.id,
-			competitionId: competition.id,
-			prediction: "HOME", // Betting on Man United to win
-		},
-	});
-
-	const crystalPalaceVsWestHamMatch = matches[4]; // Crystal Palace vs West Ham (scheduled)
-	await prisma.matchBet.create({
-		data: {
-			userId: user2.id,
-			footballMatchId: crystalPalaceVsWestHamMatch.id,
-			competitionId: competition.id,
-			prediction: "AWAY", // Betting on West Ham to win
-		},
-	});
-	console.log(
-		`🎲 Created bet: ${user2.email} betting on Chelsea to win vs Arsenal (INCORRECT)`,
-	);
-	console.log(
-		`🎲 Created bet: ${user2.email} betting on Man City to win vs Liverpool (CORRECT)`,
-	);
-	console.log(
-		`🎲 Created bet: ${user2.email} betting on draw for Burnley vs Brighton (CORRECT)`,
-	);
-	console.log(
-		`🎲 Created bet: ${user2.email} betting on Man United to win vs Tottenham`,
-	);
-	console.log(
-		`🎲 Created bet: ${user2.email} betting on West Ham to win vs Crystal Palace`,
-	);
-	console.log(`🔑 Login credentials: test@example.com / password`);
-	console.log(`🔑 Login credentials: jane@example.com / password`);
 }
 
 main()
