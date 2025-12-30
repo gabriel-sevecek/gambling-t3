@@ -36,7 +36,7 @@ function BetResultCell({
 }) {
 	if (!bet) {
 		return (
-			<div className="flex h-6 w-5 lg:h-8 lg:w-7 items-center justify-center rounded bg-gray-100 text-gray-600 text-xs">
+			<div className="flex h-5 w-4 items-center justify-center rounded bg-gray-100 text-gray-600 text-xs sm:h-6 sm:w-5 lg:h-8 lg:w-7">
 				-
 			</div>
 		);
@@ -55,7 +55,7 @@ function BetResultCell({
 
 	return (
 		<div
-			className={`flex h-6 w-5 lg:h-8 lg:w-7 items-center justify-center rounded font-medium text-xs ${bgColor}`}
+			className={`flex h-5 w-4 items-center justify-center rounded font-medium text-xs sm:h-6 sm:w-5 lg:h-8 lg:w-7 ${bgColor}`}
 		>
 			{displayText}
 		</div>
@@ -79,7 +79,7 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 		<div className="overflow-x-auto">
 			<div className="min-w-fit">
 				<div className="sticky top-0 z-10 flex bg-background">
-					<div className="sticky left-0 z-20 flex w-48 lg:w-64 shrink-0 items-center border-r border-b bg-background px-4 lg:px-6 py-3 lg:py-4">
+					<div className="sticky left-0 z-20 flex w-28 shrink-0 items-center border-r border-b bg-background px-2 py-3 lg:w-64 lg:px-6 lg:py-4">
 						<span className="font-medium text-sm">Match</span>
 					</div>
 					<div className="flex">
@@ -87,19 +87,19 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 							const isCurrentUser = user.id === currentUserId;
 							return (
 								<div
-									className={`flex w-8 lg:w-12 shrink-0 flex-col items-center border-r border-b px-2 py-2 lg:py-3`}
+									className={`flex w-8 shrink-0 flex-col items-center border-r border-b px-2 py-2 lg:w-12 lg:py-3`}
 									key={user.id}
 								>
-									<Avatar className="size-6 lg:size-8">
+									<Avatar className="size-5 lg:size-8">
 										<AvatarFallback className="text-xs">
 											{user.name.charAt(0)}
 										</AvatarFallback>
 									</Avatar>
-									<span className="mt-1 truncate text-xs">
+									<span className="mt-1 hidden truncate text-xs sm:block">
 										{user.name.split(" ")[0]}
 									</span>
 									{isCurrentUser && (
-										<span className="font-medium text-blue-600 text-xs">
+										<span className="hidden font-medium text-blue-600 text-xs sm:block">
 											You
 										</span>
 									)}
@@ -121,8 +121,42 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 
 						return (
 							<div className="flex" key={match.id}>
-								<div className="sticky left-0 z-10 flex w-48 lg:w-64 shrink-0 flex-col border-r bg-background px-4 lg:px-6 py-3 lg:py-4">
-									<div className="flex items-center gap-2 text-sm">
+								<div className="sticky left-0 z-10 flex w-28 shrink-0 flex-col border-r bg-background px-2 py-3 lg:w-64 lg:px-6 lg:py-4">
+									{/* Mobile: Vertical layout */}
+									<div className="flex flex-col gap-1 text-xs sm:hidden">
+										<div className="flex items-center justify-between">
+											<div className="flex items-center gap-1">
+												<Image
+													alt={`${match.homeTeam.name} crest`}
+													className="object-contain"
+													height={12}
+													src={match.homeTeam.crestUrl}
+													width={12}
+												/>
+												<span className="font-medium">
+													{match.homeTeam.tla}
+												</span>
+											</div>
+											<span className="font-medium">{match.homeTeamGoals}</span>
+										</div>
+										<div className="flex items-center justify-between">
+											<div className="flex items-center gap-1">
+												<Image
+													alt={`${match.awayTeam.name} crest`}
+													className="object-contain"
+													height={12}
+													src={match.awayTeam.crestUrl}
+													width={12}
+												/>
+												<span className="font-medium">
+													{match.awayTeam.tla}
+												</span>
+											</div>
+											<span className="font-medium">{match.awayTeamGoals}</span>
+										</div>
+									</div>
+									{/* Desktop: Horizontal layout */}
+									<div className="hidden items-center gap-2 text-sm sm:flex">
 										<div className="flex items-center gap-1">
 											<Image
 												alt={`${match.homeTeam.name} crest`}
@@ -147,7 +181,7 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 											/>
 										</div>
 									</div>
-									<div className="mt-1 text-muted-foreground text-xs">
+									<div className="mt-1 text-left text-muted-foreground text-xs">
 										{match.date.toLocaleDateString()}
 									</div>
 								</div>
@@ -156,7 +190,7 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 										const isCurrentUser = user.id === currentUserId;
 										return (
 											<div
-												className={`flex w-8 lg:w-12 shrink-0 items-center justify-center border-r py-3 lg:py-4 ${
+												className={`flex w-8 shrink-0 items-center justify-center border-r py-3 lg:w-12 lg:py-4 ${
 													isCurrentUser ? "bg-blue-50/50" : ""
 												}`}
 												key={user.id}
