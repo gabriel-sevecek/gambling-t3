@@ -5,10 +5,11 @@ import { api } from "~/trpc/react";
 import { ResultsTable } from "./results-table";
 
 type ResultsProps = {
+	currentUserId: string;
 	competitionId: number;
 };
 
-export function Results({ competitionId }: ResultsProps) {
+export function Results({ competitionId, currentUserId }: ResultsProps) {
 	const { data, hasNextPage, fetchNextPage, isFetchingNextPage, isLoading } =
 		api.competition.getCompeitionPastMatches.useInfiniteQuery(
 			{
@@ -49,7 +50,7 @@ export function Results({ competitionId }: ResultsProps) {
 
 	return (
 		<div className="space-y-6">
-			<ResultsTable matches={matches} />
+			<ResultsTable currentUserId={currentUserId} matches={matches} />
 			{hasNextPage && (
 				<div className="flex justify-center pt-4">
 					<Button

@@ -9,6 +9,7 @@ type PastMatch = NonNullable<
 
 type ResultsTableProps = {
 	matches: PastMatch[];
+	currentUserId: string;
 };
 
 function getMatchResult(homeGoals: number | null, awayGoals: number | null) {
@@ -61,14 +62,18 @@ function BetResultCell({
 	);
 }
 
-export function ResultsTable({ matches }: ResultsTableProps) {
+export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 	const allUsers = Array.from(
 		new Map(
 			matches
 				.flatMap((match) => match.matchBets)
 				.map((bet) => [bet.user.id, bet.user]),
 		).values(),
-	);
+	).sort((a, b) => {
+		if (a.id === currentUserId) return -1;
+		if (b.id === currentUserId) return 1;
+		return 0;
+	});
 
 	return (
 		<div className="overflow-x-auto">
@@ -78,21 +83,29 @@ export function ResultsTable({ matches }: ResultsTableProps) {
 						<span className="font-medium text-sm">Match</span>
 					</div>
 					<div className="flex">
-						{allUsers.map((user) => (
-							<div
-								className="flex w-8 shrink-0 flex-col items-center border-r border-b bg-background px-2 py-2"
-								key={user.id}
-							>
-								<Avatar className="size-6">
-									<AvatarFallback className="text-xs">
-										{user.name.charAt(0)}
-									</AvatarFallback>
-								</Avatar>
-								<span className="mt-1 truncate text-xs">
-									{user.name.split(" ")[0]}
-								</span>
-							</div>
-						))}
+						{allUsers.map((user) => {
+							const isCurrentUser = user.id === currentUserId;
+							return (
+								<div
+									className={`flex w-8 shrink-0 flex-col items-center border-r border-b px-2 py-2`}
+									key={user.id}
+								>
+									<Avatar className="size-6">
+										<AvatarFallback className="text-xs">
+											{user.name.charAt(0)}
+										</AvatarFallback>
+									</Avatar>
+									<span className="mt-1 truncate text-xs">
+										{user.name.split(" ")[0]}
+									</span>
+									{isCurrentUser && (
+										<span className="font-medium text-blue-600 text-xs">
+											You
+										</span>
+									)}
+								</div>
+							);
+						})}
 					</div>
 				</div>
 
@@ -139,17 +152,22 @@ export function ResultsTable({ matches }: ResultsTableProps) {
 									</div>
 								</div>
 								<div className="flex">
-									{allUsers.map((user) => (
-										<div
-											className="flex w-8 shrink-0 items-center justify-center border-r py-3"
-											key={user.id}
-										>
-											<BetResultCell
-												actualResult={actualResult}
-												bet={userBetsMap.get(user.id)}
-											/>
-										</div>
-									))}
+									{allUsers.map((user) => {
+										const isCurrentUser = user.id === currentUserId;
+										return (
+											<div
+												className={`flex w-8 shrink-0 items-center justify-center border-r py-3 ${
+													isCurrentUser ? "bg-blue-50/50" : ""
+												}`}
+												key={user.id}
+											>
+												<BetResultCell
+													actualResult={actualResult}
+													bet={userBetsMap.get(user.id)}
+												/>
+											</div>
+										);
+									})}
 								</div>
 							</div>
 						);
