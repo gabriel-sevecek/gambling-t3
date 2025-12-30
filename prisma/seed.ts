@@ -3,6 +3,44 @@ import { auth } from "../src/server/better-auth/config";
 
 const prisma = new PrismaClient();
 
+async function createUser(name: string, email: string, password: string, competitionId: number) {
+	const signUpResult = await auth.api.signUpEmail({
+		body: {
+			name,
+			email,
+			password,
+		},
+	});
+
+	if (!signUpResult.user) {
+		throw new Error(`Failed to create user: ${email}`);
+	}
+
+	const user = signUpResult.user;
+
+	await prisma.user.update({
+		where: { id: user.id },
+		data: { emailVerified: true },
+	});
+
+	await prisma.competitionUser.upsert({
+		where: {
+			userId_competitionId: {
+				userId: user.id,
+				competitionId,
+			},
+		},
+		update: {},
+		create: {
+			userId: user.id,
+			competitionId,
+			isActive: true,
+		},
+	});
+
+	return user;
+}
+
 async function main() {
 	console.log("🌱 Seeding database...");
 
@@ -55,78 +93,8 @@ async function main() {
 		},
 	});
 
-	// Create test user using Better Auth API
-	const signUpResult = await auth.api.signUpEmail({
-		body: {
-			name: "Test User",
-			email: "test@example.com",
-			password: "password",
-		},
-	});
-
-	if (!signUpResult.user) {
-		throw new Error("Failed to create test user");
-	}
-
-	const user = signUpResult.user;
-
-	// Mark email as verified
-	await prisma.user.update({
-		where: { id: user.id },
-		data: { emailVerified: true },
-	});
-
-	// Join the user to the competition
-	await prisma.competitionUser.upsert({
-		where: {
-			userId_competitionId: {
-				userId: user.id,
-				competitionId: competition.id,
-			},
-		},
-		update: {},
-		create: {
-			userId: user.id,
-			competitionId: competition.id,
-			isActive: true,
-		},
-	});
-
-	const signUpResult2 = await auth.api.signUpEmail({
-		body: {
-			name: "Jane Smith",
-			email: "jane@example.com",
-			password: "password",
-		},
-	});
-
-	if (!signUpResult2.user) {
-		throw new Error("Failed to create second test user");
-	}
-
-	const user2 = signUpResult2.user;
-
-	// Mark email as verified
-	await prisma.user.update({
-		where: { id: user2.id },
-		data: { emailVerified: true },
-	});
-
-	// Join the second user to the competition
-	await prisma.competitionUser.upsert({
-		where: {
-			userId_competitionId: {
-				userId: user2.id,
-				competitionId: competition.id,
-			},
-		},
-		update: {},
-		create: {
-			userId: user2.id,
-			competitionId: competition.id,
-			isActive: true,
-		},
-	});
+	const user = await createUser("Test User", "test@example.com", "password", competition.id);
+	const user2 = await createUser("Jane Smith", "jane@example.com", "password", competition.id);
 
 	// Create teams
 	const teams = await Promise.all([
