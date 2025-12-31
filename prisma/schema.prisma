@@ -163,6 +163,9 @@ model FootballMatch {
   @@index([date, id])
   @@index([seasonId, status, date])
   @@index([status, date, id])
+  @@index([seasonId, date, id])
+  @@index([seasonId, status, homeTeamGoals, awayTeamGoals])
+  @@index([date, status])
   @@map("football_matches")
 }
 
@@ -183,6 +186,7 @@ model Competition {
 
   @@index([footballSeasonId])
   @@index([isActive])
+  @@index([isActive, id])
   @@map("competitions")
 }
 
@@ -204,11 +208,11 @@ model MatchBet {
   @@index([competitionId])
   @@index([competitionId, userId])
   @@index([userId, competitionId, footballMatchId])
+  @@index([competitionId, footballMatchId, userId])
   @@map("match_bets")
 }
 
 model CompetitionUser {
-  id            Int         @id @default(autoincrement())
   userId        String      @map("user_id")
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   competitionId Int         @map("competition_id")
@@ -216,9 +220,11 @@ model CompetitionUser {
   joinedAt      DateTime    @default(now()) @map("joined_at")
   isActive      Boolean     @default(true) @map("is_active")
 
-  @@unique([userId, competitionId])
+  @@id([userId, competitionId])
   @@index([userId])
   @@index([competitionId])
+  @@index([competitionId, isActive])
+  @@index([userId, isActive])
   @@map("competition_users")
 }
 
