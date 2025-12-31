@@ -25,10 +25,10 @@ function FormIndicator({ recentForm }: { recentForm: boolean[] }) {
 		<div className="flex gap-1">
 			{recentForm.slice(0, 10).map((isCorrect, index) => (
 				<div
-					key={index}
 					className={`size-2 rounded-full ${
 						isCorrect ? "bg-green-500" : "bg-red-500"
 					}`}
+					key={index}
 				/>
 			))}
 		</div>
@@ -60,14 +60,14 @@ function LeaderboardRow({
 						{entry.user.name.charAt(0)}
 					</AvatarFallback>
 				</Avatar>
-				<div className="min-w-0 flex-1">
+				<div className="min-w-0">
 					<div className="truncate font-medium">{entry.user.name}</div>
 					{isCurrentUser && <div className="text-blue-600 text-xs">You</div>}
 				</div>
 			</div>
 
 			{/* Desktop Stats */}
-			<div className="hidden grid grid-cols-7 gap-4 text-center text-sm md:grid">
+			<div className="grid hidden grid-cols-7 gap-4 text-center text-sm md:grid">
 				{/* Overall */}
 				<div>
 					<div className="font-medium">
@@ -153,7 +153,7 @@ export function Leaderboard({
 		return (
 			<div className="space-y-4">
 				{[1, 2, 3, 4, 5].map((i) => (
-					<Skeleton key={i} className="h-16 w-full" />
+					<Skeleton className="h-16 w-full" key={i} />
 				))}
 			</div>
 		);
@@ -173,7 +173,7 @@ export function Leaderboard({
 			<div className="sticky top-0 z-10 flex items-center gap-4 border-b bg-background p-4 font-medium text-sm">
 				<div className="w-8 text-center">Rank</div>
 				<div className="min-w-0 flex-1">User</div>
-				<div className="hidden grid grid-cols-7 gap-4 text-center md:grid">
+				<div className="grid hidden grid-cols-7 gap-4 text-center md:grid">
 					<div>Overall</div>
 					<div>Home</div>
 					<div>Away</div>
@@ -189,10 +189,10 @@ export function Leaderboard({
 			<div>
 				{leaderboard.map((entry, index) => (
 					<LeaderboardRow
-						key={entry.user.id}
 						entry={entry}
-						rank={index + 1}
 						isCurrentUser={entry.user.id === currentUserId}
+						key={entry.user.id}
+						rank={index + 1}
 					/>
 				))}
 			</div>
