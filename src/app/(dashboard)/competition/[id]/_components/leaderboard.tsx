@@ -51,9 +51,7 @@ function LeaderboardRow({
 			}`}
 		>
 			{/* Rank */}
-			<div className="w-8 text-center font-bold text-lg">
-				{rank}
-			</div>
+			<div className="w-8 text-center font-bold text-lg">{rank}</div>
 
 			{/* User */}
 			<div className="flex min-w-0 flex-1 items-center gap-3">
@@ -64,9 +62,7 @@ function LeaderboardRow({
 				</Avatar>
 				<div className="min-w-0 flex-1">
 					<div className="truncate font-medium">{entry.user.name}</div>
-					{isCurrentUser && (
-						<div className="text-blue-600 text-xs">You</div>
-					)}
+					{isCurrentUser && <div className="text-blue-600 text-xs">You</div>}
 				</div>
 			</div>
 
@@ -144,10 +140,14 @@ function LeaderboardRow({
 	);
 }
 
-export function Leaderboard({ competitionId, currentUserId }: LeaderboardProps) {
-	const { data: leaderboard, isLoading } = api.competition.getCompetitionLeaderboard.useQuery({
-		competitionId,
-	});
+export function Leaderboard({
+	competitionId,
+	currentUserId,
+}: LeaderboardProps) {
+	const { data: leaderboard, isLoading } =
+		api.competition.getCompetitionLeaderboard.useQuery({
+			competitionId,
+		});
 
 	if (isLoading) {
 		return (
