@@ -69,7 +69,7 @@ function LeaderboardRow({
 			{/* Desktop Stats */}
 			<div className="grid hidden grid-cols-7 gap-4 text-center text-sm md:grid">
 				{/* Overall */}
-				<div>
+				<div className="w-16">
 					<div className="font-medium">
 						{entry.correctPredictions}/{entry.totalBets}
 					</div>
@@ -79,7 +79,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Home */}
-				<div>
+				<div className="w-14">
 					<div className="font-medium">
 						{entry.homeBets.correct}/{entry.homeBets.total}
 					</div>
@@ -89,7 +89,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Away */}
-				<div>
+				<div className="w-14">
 					<div className="font-medium">
 						{entry.awayBets.correct}/{entry.awayBets.total}
 					</div>
@@ -99,7 +99,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Draw */}
-				<div>
+				<div className="w-14">
 					<div className="font-medium">
 						{entry.drawBets.correct}/{entry.drawBets.total}
 					</div>
@@ -109,17 +109,17 @@ function LeaderboardRow({
 				</div>
 
 				{/* Success Rate Progress */}
-				<div className="flex flex-col justify-center">
+				<div className="w-20 flex flex-col justify-center">
 					<ProgressBar percentage={entry.successPercentage} />
 				</div>
 
 				{/* Form */}
-				<div className="flex justify-center">
+				<div className="w-24 flex justify-center">
 					<FormIndicator recentForm={entry.recentForm} />
 				</div>
 
 				{/* Form Percentage */}
-				<div className="font-medium">
+				<div className="w-12 font-medium">
 					{entry.recentFormPercentage.toFixed(0)}%
 				</div>
 			</div>
@@ -174,13 +174,13 @@ export function Leaderboard({
 				<div className="w-8 text-center">Rank</div>
 				<div className="min-w-0 flex-1">User</div>
 				<div className="grid hidden grid-cols-7 gap-4 text-center md:grid">
-					<div>Overall</div>
-					<div>Home</div>
-					<div>Away</div>
-					<div>Draw</div>
-					<div>Success</div>
-					<div>Form</div>
-					<div>Form %</div>
+					<div className="w-16">Overall</div>
+					<div className="w-14">Home</div>
+					<div className="w-14">Away</div>
+					<div className="w-14">Draw</div>
+					<div className="w-20">Success</div>
+					<div className="w-24">Form</div>
+					<div className="w-12">Form %</div>
 				</div>
 				<div className="text-right md:hidden">Stats</div>
 			</div>
