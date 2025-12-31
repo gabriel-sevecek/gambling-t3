@@ -7,3 +7,7 @@ export type Match = NonNullable<
 export type PlaceBetMutation = ReturnType<
 	typeof api.competition.placeBet.useMutation
 >;
+
+export type LeaderboardEntry = NonNullable<
+	RouterOutputs["competition"]["getCompetitionLeaderboard"]
+>[number];

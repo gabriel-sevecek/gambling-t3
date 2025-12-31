@@ -364,4 +364,124 @@ export const competitionRouter = createTRPCRouter({
 				nextCursor: createNextCursor(matches, input.limit),
 			};
 		}),
+
+	getCompetitionLeaderboard: protectedProcedure
+		.input(z.object({ competitionId: z.number() }))
+		.query(async ({ ctx, input }) => {
+			const competition = await validateCompetitionAccess(
+				ctx.db,
+				input.competitionId,
+				ctx.session.user.id,
+			);
+
+			if (!competition) {
+				return [];
+			}
+
+			const finishedMatches = await ctx.db.footballMatch.findMany({
+				where: {
+					seasonId: competition.footballSeasonId,
+					status: "FINISHED",
+					homeTeamGoals: { not: null },
+					awayTeamGoals: { not: null },
+				},
+				include: {
+					matchBets: {
+						where: {
+							competitionId: input.competitionId,
+						},
+						include: {
+							user: {
+								select: {
+									id: true,
+									name: true,
+									image: true,
+								},
+							},
+						},
+					},
+				},
+				orderBy: [{ date: "desc" }, { id: "desc" }],
+			});
+
+			const userStatsMap = new Map<string, {
+				user: { id: string; name: string; image: string | null };
+				totalBets: number;
+				correctPredictions: number;
+				homeBets: { total: number; correct: number };
+				awayBets: { total: number; correct: number };
+				drawBets: { total: number; correct: number };
+				recentForm: boolean[];
+			}>();
+
+			for (const match of finishedMatches) {
+				const actualResult = 
+					match.homeTeamGoals! > match.awayTeamGoals! ? "HOME" :
+					match.homeTeamGoals! < match.awayTeamGoals! ? "AWAY" : "DRAW";
+
+				for (const bet of match.matchBets) {
+					if (!userStatsMap.has(bet.userId)) {
+						userStatsMap.set(bet.userId, {
+							user: bet.user,
+							totalBets: 0,
+							correctPredictions: 0,
+							homeBets: { total: 0, correct: 0 },
+							awayBets: { total: 0, correct: 0 },
+							drawBets: { total: 0, correct: 0 },
+							recentForm: [],
+						});
+					}
+
+					const userStats = userStatsMap.get(bet.userId)!;
+					const isCorrect = bet.prediction === actualResult;
+
+					userStats.totalBets++;
+					if (isCorrect) {
+						userStats.correctPredictions++;
+					}
+
+					if (bet.prediction === "HOME") {
+						userStats.homeBets.total++;
+						if (isCorrect) userStats.homeBets.correct++;
+					} else if (bet.prediction === "AWAY") {
+						userStats.awayBets.total++;
+						if (isCorrect) userStats.awayBets.correct++;
+					} else {
+						userStats.drawBets.total++;
+						if (isCorrect) userStats.drawBets.correct++;
+					}
+
+					if (userStats.recentForm.length < 10) {
+						userStats.recentForm.unshift(isCorrect);
+					} else {
+						userStats.recentForm.pop();
+						userStats.recentForm.unshift(isCorrect);
+					}
+				}
+			}
+
+			const leaderboard = Array.from(userStatsMap.values())
+				.map((stats) => ({
+					user: stats.user,
+					totalBets: stats.totalBets,
+					correctPredictions: stats.correctPredictions,
+					successPercentage: stats.totalBets > 0 ? (stats.correctPredictions / stats.totalBets) * 100 : 0,
+					homeBets: stats.homeBets,
+					homeSuccessPercentage: stats.homeBets.total > 0 ? (stats.homeBets.correct / stats.homeBets.total) * 100 : 0,
+					awayBets: stats.awayBets,
+					awaySuccessPercentage: stats.awayBets.total > 0 ? (stats.awayBets.correct / stats.awayBets.total) * 100 : 0,
+					drawBets: stats.drawBets,
+					drawSuccessPercentage: stats.drawBets.total > 0 ? (stats.drawBets.correct / stats.drawBets.total) * 100 : 0,
+					recentForm: stats.recentForm,
+					recentFormPercentage: stats.recentForm.length > 0 ? (stats.recentForm.filter(Boolean).length / stats.recentForm.length) * 100 : 0,
+				}))
+				.sort((a, b) => {
+					if (a.correctPredictions !== b.correctPredictions) {
+						return b.correctPredictions - a.correctPredictions;
+					}
+					return a.totalBets - b.totalBets;
+				});
+
+			return leaderboard;
+		}),
 });
