@@ -32,9 +32,10 @@ export default async function DashboardLayout({
 	};
 
 	const userCompetitions = await api.competition.getUserCompetitions();
+	console.log(userCompetitions);
 	const competitions: SidebarCompetition[] = userCompetitions.map((comp) => ({
 		id: comp.id,
-		code: comp.footballCompetition.code,
+		code: comp.footballSeason.footballCompetition.code,
 		name: comp.name,
 	}));
 

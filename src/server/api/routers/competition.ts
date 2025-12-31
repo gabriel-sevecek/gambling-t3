@@ -121,8 +121,11 @@ export const competitionRouter = createTRPCRouter({
 				isActive: true,
 			},
 			include: {
-				footballCompetition: true,
-				footballSeason: true,
+				footballSeason: {
+					include: {
+						footballCompetition: true,
+					},
+				},
 				competitionUsers: {
 					where: {
 						userId: ctx.session.user.id,
@@ -160,8 +163,11 @@ export const competitionRouter = createTRPCRouter({
 					isActive: true,
 				},
 				include: {
-					footballCompetition: true,
-					footballSeason: true,
+					footballSeason: {
+						include: {
+							footballCompetition: true,
+						},
+					},
 					competitionUsers: {
 						where: {
 							userId: ctx.session.user.id,
@@ -249,8 +255,11 @@ export const competitionRouter = createTRPCRouter({
 				isActive: true,
 			},
 			include: {
-				footballCompetition: true,
-				footballSeason: true,
+				footballSeason: {
+					include: {
+						footballCompetition: true,
+					},
+				},
 				_count: {
 					select: {
 						competitionUsers: {

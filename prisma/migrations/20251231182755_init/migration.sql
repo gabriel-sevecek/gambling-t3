@@ -68,7 +68,7 @@ CREATE TABLE "football_competitions" (
     "name" TEXT NOT NULL,
     "area_id" INTEGER NOT NULL,
     "current_season_id" INTEGER,
-    "code" TEXT,
+    "code" TEXT NOT NULL,
     "last_updated" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE "football_seasons" (
     "football_competition_id" INTEGER NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
-    "current_matchday" INTEGER,
+    "current_matchday" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -95,7 +95,7 @@ CREATE TABLE "football_teams" (
     "name" TEXT NOT NULL,
     "short_name" TEXT NOT NULL,
     "tla" TEXT NOT NULL,
-    "crest_url" TEXT,
+    "crest_url" TEXT NOT NULL,
     "last_updated" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -109,9 +109,9 @@ CREATE TABLE "football_matches" (
     "season_id" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "status" "MatchStatus" NOT NULL DEFAULT 'SCHEDULED',
-    "matchday" INTEGER,
-    "home_team_id" INTEGER,
-    "away_team_id" INTEGER,
+    "matchday" INTEGER NOT NULL,
+    "home_team_id" INTEGER NOT NULL,
+    "away_team_id" INTEGER NOT NULL,
     "home_team_goals" INTEGER,
     "away_team_goals" INTEGER,
     "last_updated" TIMESTAMP(3) NOT NULL,
@@ -130,7 +130,6 @@ CREATE TABLE "competitions" (
     "description" TEXT,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "football_season_id" INTEGER NOT NULL,
-    "football_competition_id" INTEGER NOT NULL,
 
     CONSTRAINT "competitions_pkey" PRIMARY KEY ("id")
 );
@@ -150,13 +149,12 @@ CREATE TABLE "match_bets" (
 
 -- CreateTable
 CREATE TABLE "competition_users" (
-    "id" SERIAL NOT NULL,
     "user_id" TEXT NOT NULL,
     "competition_id" INTEGER NOT NULL,
     "joined_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "competition_users_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "competition_users_pkey" PRIMARY KEY ("user_id","competition_id")
 );
 
 -- CreateIndex
@@ -241,13 +239,31 @@ CREATE INDEX "football_matches_away_team_id_idx" ON "football_matches"("away_tea
 CREATE INDEX "football_matches_matchday_idx" ON "football_matches"("matchday");
 
 -- CreateIndex
+CREATE INDEX "football_matches_date_id_idx" ON "football_matches"("date", "id");
+
+-- CreateIndex
+CREATE INDEX "football_matches_season_id_status_date_idx" ON "football_matches"("season_id", "status", "date");
+
+-- CreateIndex
+CREATE INDEX "football_matches_status_date_id_idx" ON "football_matches"("status", "date", "id");
+
+-- CreateIndex
+CREATE INDEX "football_matches_season_id_date_id_idx" ON "football_matches"("season_id", "date", "id");
+
+-- CreateIndex
+CREATE INDEX "football_matches_season_id_status_home_team_goals_away_team_idx" ON "football_matches"("season_id", "status", "home_team_goals", "away_team_goals");
+
+-- CreateIndex
+CREATE INDEX "football_matches_date_status_idx" ON "football_matches"("date", "status");
+
+-- CreateIndex
 CREATE INDEX "competitions_football_season_id_idx" ON "competitions"("football_season_id");
 
 -- CreateIndex
-CREATE INDEX "competitions_football_competition_id_idx" ON "competitions"("football_competition_id");
+CREATE INDEX "competitions_is_active_idx" ON "competitions"("is_active");
 
 -- CreateIndex
-CREATE INDEX "competitions_is_active_idx" ON "competitions"("is_active");
+CREATE INDEX "competitions_is_active_id_idx" ON "competitions"("is_active", "id");
 
 -- CreateIndex
 CREATE INDEX "match_bets_user_id_idx" ON "match_bets"("user_id");
@@ -259,6 +275,15 @@ CREATE INDEX "match_bets_football_match_id_idx" ON "match_bets"("football_match_
 CREATE INDEX "match_bets_competition_id_idx" ON "match_bets"("competition_id");
 
 -- CreateIndex
+CREATE INDEX "match_bets_competition_id_user_id_idx" ON "match_bets"("competition_id", "user_id");
+
+-- CreateIndex
+CREATE INDEX "match_bets_user_id_competition_id_football_match_id_idx" ON "match_bets"("user_id", "competition_id", "football_match_id");
+
+-- CreateIndex
+CREATE INDEX "match_bets_competition_id_football_match_id_user_id_idx" ON "match_bets"("competition_id", "football_match_id", "user_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "match_bets_user_id_football_match_id_competition_id_key" ON "match_bets"("user_id", "football_match_id", "competition_id");
 
 -- CreateIndex
@@ -268,7 +293,10 @@ CREATE INDEX "competition_users_user_id_idx" ON "competition_users"("user_id");
 CREATE INDEX "competition_users_competition_id_idx" ON "competition_users"("competition_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "competition_users_user_id_competition_id_key" ON "competition_users"("user_id", "competition_id");
+CREATE INDEX "competition_users_competition_id_is_active_idx" ON "competition_users"("competition_id", "is_active");
+
+-- CreateIndex
+CREATE INDEX "competition_users_user_id_is_active_idx" ON "competition_users"("user_id", "is_active");
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -286,16 +314,13 @@ ALTER TABLE "football_seasons" ADD CONSTRAINT "football_seasons_football_competi
 ALTER TABLE "football_matches" ADD CONSTRAINT "football_matches_season_id_fkey" FOREIGN KEY ("season_id") REFERENCES "football_seasons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "football_matches" ADD CONSTRAINT "football_matches_home_team_id_fkey" FOREIGN KEY ("home_team_id") REFERENCES "football_teams"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "football_matches" ADD CONSTRAINT "football_matches_home_team_id_fkey" FOREIGN KEY ("home_team_id") REFERENCES "football_teams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "football_matches" ADD CONSTRAINT "football_matches_away_team_id_fkey" FOREIGN KEY ("away_team_id") REFERENCES "football_teams"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "football_matches" ADD CONSTRAINT "football_matches_away_team_id_fkey" FOREIGN KEY ("away_team_id") REFERENCES "football_teams"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "competitions" ADD CONSTRAINT "competitions_football_season_id_fkey" FOREIGN KEY ("football_season_id") REFERENCES "football_seasons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "competitions" ADD CONSTRAINT "competitions_football_competition_id_fkey" FOREIGN KEY ("football_competition_id") REFERENCES "football_competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "match_bets" ADD CONSTRAINT "match_bets_football_match_id_fkey" FOREIGN KEY ("football_match_id") REFERENCES "football_matches"("id") ON DELETE CASCADE ON UPDATE CASCADE;
