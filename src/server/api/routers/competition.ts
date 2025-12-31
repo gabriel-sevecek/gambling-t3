@@ -23,6 +23,28 @@ type ProcessedFutureMatch = Omit<FutureMatchWithBets, "matchBets"> & {
 	currentUserBet: FutureMatchWithBets["matchBets"][0] | null;
 };
 
+type FinishedMatchWithBets = Prisma.FootballMatchGetPayload<{
+	include: {
+		matchBets: {
+			where: {
+				competitionId: number;
+			};
+			include: {
+				user: {
+					select: {
+						id: true;
+						name: true;
+						image: true;
+					};
+				};
+			};
+		};
+	};
+}> & {
+	homeTeamGoals: number;
+	awayTeamGoals: number;
+};
+
 async function validateCompetitionAccess(
 	db: PrismaClient,
 	competitionId: number,
@@ -378,7 +400,7 @@ export const competitionRouter = createTRPCRouter({
 				return [];
 			}
 
-			const finishedMatches = await ctx.db.footballMatch.findMany({
+			const finishedMatches = (await ctx.db.footballMatch.findMany({
 				where: {
 					seasonId: competition.footballSeasonId,
 					status: "FINISHED",
@@ -402,7 +424,7 @@ export const competitionRouter = createTRPCRouter({
 					},
 				},
 				orderBy: [{ date: "desc" }, { id: "desc" }],
-			});
+			})) as FinishedMatchWithBets[];
 
 			const userStatsMap = new Map<
 				string,
@@ -419,17 +441,17 @@ export const competitionRouter = createTRPCRouter({
 
 			for (const match of finishedMatches) {
 				const actualResult =
-					// biome-ignore lint/style/noNonNullAssertion: see query above
-					match.homeTeamGoals! > match.awayTeamGoals!
+					match.homeTeamGoals > match.awayTeamGoals
 						? "HOME"
-						: // biome-ignore lint/style/noNonNullAssertion: see query above
-							match.homeTeamGoals! < match.awayTeamGoals!
+						: match.homeTeamGoals < match.awayTeamGoals
 							? "AWAY"
 							: "DRAW";
 
 				for (const bet of match.matchBets) {
-					if (!userStatsMap.has(bet.userId)) {
-						userStatsMap.set(bet.userId, {
+					let userStats = userStatsMap.get(bet.userId);
+
+					if (!userStats) {
+						userStats = {
 							user: bet.user,
 							totalBets: 0,
 							correctPredictions: 0,
@@ -437,11 +459,10 @@ export const competitionRouter = createTRPCRouter({
 							awayBets: { total: 0, correct: 0 },
 							drawBets: { total: 0, correct: 0 },
 							recentForm: [],
-						});
+						};
+						userStatsMap.set(bet.userId, userStats);
 					}
 
-					// biome-ignore lint/style/noNonNullAssertion: set above
-					const userStats = userStatsMap.get(bet.userId)!;
 					const isCorrect = bet.prediction === actualResult;
 
 					userStats.totalBets++;

@@ -11,7 +11,7 @@ type LeaderboardProps = {
 
 function FormIndicator({ recentForm }: { recentForm: boolean[] }) {
 	return (
-		<div className="flex gap-1">
+		<div className="flex items-center gap-1">
 			{recentForm.slice(0, 10).map((isCorrect, index) => (
 				<div
 					className={`size-2 rounded-full ${
@@ -57,7 +57,7 @@ function LeaderboardRow({
 			</div>
 
 			{/* Desktop Stats */}
-			<div className="grid hidden grid-cols-5 gap-4 text-center text-sm md:grid">
+			<div className="grid hidden max-w-[400px] grid-cols-5 text-center text-sm md:grid">
 				{/* Overall */}
 				<div className="w-20">
 					<div className="font-semibold text-base">
@@ -153,7 +153,7 @@ export function Leaderboard({
 			<div className="sticky top-0 z-10 flex items-center gap-4 border-b bg-background p-4 font-medium text-sm">
 				<div className="w-8 text-center">Rank</div>
 				<div className="min-w-0 flex-1">User</div>
-				<div className="grid hidden grid-cols-5 gap-4 text-center md:grid">
+				<div className="grid max-w-[400px] hidden grid-cols-5 text-center md:grid">
 					<div className="w-20 font-semibold">Overall</div>
 					<div className="w-16 text-muted-foreground">Home</div>
 					<div className="w-16 text-muted-foreground">Away</div>
