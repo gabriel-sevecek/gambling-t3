@@ -173,7 +173,7 @@ export function Leaderboard({ competitionId, currentUserId }: LeaderboardProps) 
 			<div className="sticky top-0 z-10 flex items-center gap-4 border-b bg-background p-4 font-medium text-sm">
 				<div className="w-8 text-center">Rank</div>
 				<div className="min-w-0 flex-1">User</div>
-				<div className="hidden grid-cols-7 gap-4 text-center md:grid">
+				<div className="hidden grid grid-cols-7 gap-4 text-center md:grid">
 					<div>Overall</div>
 					<div>Home</div>
 					<div>Away</div>
