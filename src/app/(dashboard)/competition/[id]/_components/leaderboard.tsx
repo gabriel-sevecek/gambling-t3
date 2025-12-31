@@ -71,7 +71,7 @@ function LeaderboardRow({
 			</div>
 
 			{/* Desktop Stats */}
-			<div className="hidden grid-cols-7 gap-4 text-center text-sm md:grid">
+			<div className="hidden grid grid-cols-7 gap-4 text-center text-sm md:grid">
 				{/* Overall */}
 				<div>
 					<div className="font-medium">
