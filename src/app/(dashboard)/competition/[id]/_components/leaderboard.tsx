@@ -119,7 +119,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Form Percentage */}
-				<div className="w-12 font-medium">
+				<div className="w-24 font-medium">
 					{entry.recentFormPercentage.toFixed(0)}%
 				</div>
 			</div>
@@ -180,7 +180,7 @@ export function Leaderboard({
 					<div className="w-14">Draw</div>
 					<div className="w-20">Success</div>
 					<div className="w-24">Form</div>
-					<div className="w-12">Form %</div>
+					<div className="w-24">Form %</div>
 				</div>
 				<div className="text-right md:hidden">Stats</div>
 			</div>

@@ -404,20 +404,26 @@ export const competitionRouter = createTRPCRouter({
 				orderBy: [{ date: "desc" }, { id: "desc" }],
 			});
 
-			const userStatsMap = new Map<string, {
-				user: { id: string; name: string; image: string | null };
-				totalBets: number;
-				correctPredictions: number;
-				homeBets: { total: number; correct: number };
-				awayBets: { total: number; correct: number };
-				drawBets: { total: number; correct: number };
-				recentForm: boolean[];
-			}>();
+			const userStatsMap = new Map<
+				string,
+				{
+					user: { id: string; name: string; image: string | null };
+					totalBets: number;
+					correctPredictions: number;
+					homeBets: { total: number; correct: number };
+					awayBets: { total: number; correct: number };
+					drawBets: { total: number; correct: number };
+					recentForm: boolean[];
+				}
+			>();
 
 			for (const match of finishedMatches) {
-				const actualResult = 
-					match.homeTeamGoals! > match.awayTeamGoals! ? "HOME" :
-					match.homeTeamGoals! < match.awayTeamGoals! ? "AWAY" : "DRAW";
+				const actualResult =
+					match.homeTeamGoals! > match.awayTeamGoals!
+						? "HOME"
+						: match.homeTeamGoals! < match.awayTeamGoals!
+							? "AWAY"
+							: "DRAW";
 
 				for (const bet of match.matchBets) {
 					if (!userStatsMap.has(bet.userId)) {
@@ -465,15 +471,32 @@ export const competitionRouter = createTRPCRouter({
 					user: stats.user,
 					totalBets: stats.totalBets,
 					correctPredictions: stats.correctPredictions,
-					successPercentage: stats.totalBets > 0 ? (stats.correctPredictions / stats.totalBets) * 100 : 0,
+					successPercentage:
+						stats.totalBets > 0
+							? (stats.correctPredictions / stats.totalBets) * 100
+							: 0,
 					homeBets: stats.homeBets,
-					homeSuccessPercentage: stats.homeBets.total > 0 ? (stats.homeBets.correct / stats.homeBets.total) * 100 : 0,
+					homeSuccessPercentage:
+						stats.homeBets.total > 0
+							? (stats.homeBets.correct / stats.homeBets.total) * 100
+							: 0,
 					awayBets: stats.awayBets,
-					awaySuccessPercentage: stats.awayBets.total > 0 ? (stats.awayBets.correct / stats.awayBets.total) * 100 : 0,
+					awaySuccessPercentage:
+						stats.awayBets.total > 0
+							? (stats.awayBets.correct / stats.awayBets.total) * 100
+							: 0,
 					drawBets: stats.drawBets,
-					drawSuccessPercentage: stats.drawBets.total > 0 ? (stats.drawBets.correct / stats.drawBets.total) * 100 : 0,
+					drawSuccessPercentage:
+						stats.drawBets.total > 0
+							? (stats.drawBets.correct / stats.drawBets.total) * 100
+							: 0,
 					recentForm: stats.recentForm,
-					recentFormPercentage: stats.recentForm.length > 0 ? (stats.recentForm.filter(Boolean).length / stats.recentForm.length) * 100 : 0,
+					recentFormPercentage:
+						stats.recentForm.length > 0
+							? (stats.recentForm.filter(Boolean).length /
+									stats.recentForm.length) *
+								100
+							: 0,
 				}))
 				.sort((a, b) => {
 					if (a.correctPredictions !== b.correctPredictions) {
