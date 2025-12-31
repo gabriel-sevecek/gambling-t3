@@ -35,8 +35,11 @@ export default async function CompetitionPage({
 					<TabsTrigger className="cursor-pointer" value="fixtures">
 						Fixtures
 					</TabsTrigger>
-					<TabsTrigger className="cursor-pointer" value="table">
+					<TabsTrigger className="cursor-pointer" value="results">
 						Results
+					</TabsTrigger>
+					<TabsTrigger className="cursor-pointer" value="table">
+						Table
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="fixtures">
@@ -44,13 +47,16 @@ export default async function CompetitionPage({
 						<Fixtures competitionId={competitionId} />
 					</div>
 				</TabsContent>
-				<TabsContent value="table">
+				<TabsContent value="results">
 					<div className="space-y-6">
 						<Results
 							competitionId={competitionId}
 							currentUserId={session.user.id}
 						/>
 					</div>
+				</TabsContent>
+				<TabsContent value="table">
+					<div className="space-y-6">Table info</div>
 				</TabsContent>
 			</Tabs>
 		</div>
