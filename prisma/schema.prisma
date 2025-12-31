@@ -162,6 +162,8 @@ model FootballMatch {
   @@index([awayTeamId])
   @@index([matchday])
   @@index([date, id])
+  @@index([seasonId, status, date])
+  @@index([status, date, id])
   @@map("football_matches")
 }
 
@@ -204,6 +206,8 @@ model MatchBet {
   @@index([userId])
   @@index([footballMatchId])
   @@index([competitionId])
+  @@index([competitionId, userId])
+  @@index([userId, competitionId, footballMatchId])
   @@map("match_bets")
 }
 
