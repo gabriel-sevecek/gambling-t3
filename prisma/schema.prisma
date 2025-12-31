@@ -94,7 +94,6 @@ model FootballCompetition {
   updatedAt       DateTime         @updatedAt @map("updated_at")
   seasons         FootballSeason[]
   currentSeason   FootballSeason?  @relation("CurrentSeason", fields: [currentSeasonId], references: [id])
-  competitions    Competition[]
 
   @@index([areaId])
   @@index([code])
@@ -179,13 +178,10 @@ model Competition {
   isActive              Boolean             @default(true) @map("is_active")
   footballSeasonId      Int                 @map("football_season_id")
   footballSeason        FootballSeason      @relation(fields: [footballSeasonId], references: [id], onDelete: Cascade)
-  footballCompetitionId Int                 @map("football_competition_id")
-  footballCompetition   FootballCompetition @relation(fields: [footballCompetitionId], references: [id], onDelete: Cascade)
   matchBets             MatchBet[]
   competitionUsers      CompetitionUser[]
 
   @@index([footballSeasonId])
-  @@index([footballCompetitionId])
   @@index([isActive])
   @@map("competitions")
 }
