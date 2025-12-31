@@ -9,17 +9,6 @@ type LeaderboardProps = {
 	currentUserId: string;
 };
 
-function ProgressBar({ percentage }: { percentage: number }) {
-	return (
-		<div className="h-2 w-full rounded-full bg-gray-200">
-			<div
-				className="h-2 rounded-full bg-green-500 transition-all duration-300"
-				style={{ width: `${Math.min(percentage, 100)}%` }}
-			/>
-		</div>
-	);
-}
-
 function FormIndicator({ recentForm }: { recentForm: boolean[] }) {
 	return (
 		<div className="flex gap-1">
@@ -28,6 +17,7 @@ function FormIndicator({ recentForm }: { recentForm: boolean[] }) {
 					className={`size-2 rounded-full ${
 						isCorrect ? "bg-green-500" : "bg-red-500"
 					}`}
+					// biome-ignore lint/suspicious/noArrayIndexKey: array of booleans
 					key={index}
 				/>
 			))}
@@ -67,10 +57,10 @@ function LeaderboardRow({
 			</div>
 
 			{/* Desktop Stats */}
-			<div className="grid hidden grid-cols-7 gap-4 text-center text-sm md:grid">
+			<div className="grid hidden grid-cols-5 gap-4 text-center text-sm md:grid">
 				{/* Overall */}
-				<div className="w-16">
-					<div className="font-medium">
+				<div className="w-20">
+					<div className="font-semibold text-base">
 						{entry.correctPredictions}/{entry.totalBets}
 					</div>
 					<div className="text-muted-foreground text-xs">
@@ -79,7 +69,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Home */}
-				<div className="w-14">
+				<div className="w-16 text-muted-foreground">
 					<div className="font-medium">
 						{entry.homeBets.correct}/{entry.homeBets.total}
 					</div>
@@ -89,7 +79,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Away */}
-				<div className="w-14">
+				<div className="w-16 text-muted-foreground">
 					<div className="font-medium">
 						{entry.awayBets.correct}/{entry.awayBets.total}
 					</div>
@@ -99,7 +89,7 @@ function LeaderboardRow({
 				</div>
 
 				{/* Draw */}
-				<div className="w-14">
+				<div className="w-16 text-muted-foreground">
 					<div className="font-medium">
 						{entry.drawBets.correct}/{entry.drawBets.total}
 					</div>
@@ -108,19 +98,9 @@ function LeaderboardRow({
 					</div>
 				</div>
 
-				{/* Success Rate Progress */}
-				<div className="w-20 flex flex-col justify-center">
-					<ProgressBar percentage={entry.successPercentage} />
-				</div>
-
 				{/* Form */}
-				<div className="w-24 flex justify-center">
+				<div className="flex w-28 justify-center">
 					<FormIndicator recentForm={entry.recentForm} />
-				</div>
-
-				{/* Form Percentage */}
-				<div className="w-24 font-medium">
-					{entry.recentFormPercentage.toFixed(0)}%
 				</div>
 			</div>
 
@@ -173,14 +153,12 @@ export function Leaderboard({
 			<div className="sticky top-0 z-10 flex items-center gap-4 border-b bg-background p-4 font-medium text-sm">
 				<div className="w-8 text-center">Rank</div>
 				<div className="min-w-0 flex-1">User</div>
-				<div className="grid hidden grid-cols-7 gap-4 text-center md:grid">
-					<div className="w-16">Overall</div>
-					<div className="w-14">Home</div>
-					<div className="w-14">Away</div>
-					<div className="w-14">Draw</div>
-					<div className="w-20">Success</div>
-					<div className="w-24">Form</div>
-					<div className="w-24">Form %</div>
+				<div className="grid hidden grid-cols-5 gap-4 text-center md:grid">
+					<div className="w-20 font-semibold">Overall</div>
+					<div className="w-16 text-muted-foreground">Home</div>
+					<div className="w-16 text-muted-foreground">Away</div>
+					<div className="w-16 text-muted-foreground">Draw</div>
+					<div className="w-28">Form</div>
 				</div>
 				<div className="text-right md:hidden">Stats</div>
 			</div>

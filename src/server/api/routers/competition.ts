@@ -419,9 +419,11 @@ export const competitionRouter = createTRPCRouter({
 
 			for (const match of finishedMatches) {
 				const actualResult =
+					// biome-ignore lint/style/noNonNullAssertion: see query above
 					match.homeTeamGoals! > match.awayTeamGoals!
 						? "HOME"
-						: match.homeTeamGoals! < match.awayTeamGoals!
+						: // biome-ignore lint/style/noNonNullAssertion: see query above
+							match.homeTeamGoals! < match.awayTeamGoals!
 							? "AWAY"
 							: "DRAW";
 
@@ -438,6 +440,7 @@ export const competitionRouter = createTRPCRouter({
 						});
 					}
 
+					// biome-ignore lint/style/noNonNullAssertion: set above
 					const userStats = userStatsMap.get(bet.userId)!;
 					const isCorrect = bet.prediction === actualResult;
 
@@ -491,12 +494,6 @@ export const competitionRouter = createTRPCRouter({
 							? (stats.drawBets.correct / stats.drawBets.total) * 100
 							: 0,
 					recentForm: stats.recentForm,
-					recentFormPercentage:
-						stats.recentForm.length > 0
-							? (stats.recentForm.filter(Boolean).length /
-									stats.recentForm.length) *
-								100
-							: 0,
 				}))
 				.sort((a, b) => {
 					if (a.correctPredictions !== b.correctPredictions) {
