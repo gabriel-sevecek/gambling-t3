@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { getSession } from "~/server/better-auth/server";
 import { api } from "~/trpc/server";
 import { Fixtures } from "./_components/fixtures";
+import { Leaderboard } from "./_components/leaderboard";
 import { Results } from "./_components/results";
 
 export default async function CompetitionPage({
@@ -38,8 +39,8 @@ export default async function CompetitionPage({
 					<TabsTrigger className="cursor-pointer" value="results">
 						Results
 					</TabsTrigger>
-					<TabsTrigger className="cursor-pointer" value="table">
-						Table
+					<TabsTrigger className="cursor-pointer" value="leaderboard">
+						Leaderboard
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="fixtures">
@@ -55,8 +56,13 @@ export default async function CompetitionPage({
 						/>
 					</div>
 				</TabsContent>
-				<TabsContent value="table">
-					<div className="space-y-6">Table info</div>
+				<TabsContent value="leaderboard">
+					<div className="space-y-6">
+						<Leaderboard
+							competitionId={competitionId}
+							currentUserId={session.user.id}
+						/>
+					</div>
 				</TabsContent>
 			</Tabs>
 		</div>
