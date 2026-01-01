@@ -84,7 +84,7 @@ export function ResultsTable({ rows, currentUserId }: ResultsTableProps) {
 	return (
 		<div className="overflow-x-auto">
 			<div className="min-w-fit">
-				<div className="sticky top-0 z-10 flex bg-background">
+				<div className="sticky top-0 z-10 flex bg-background shadow-sm">
 					<div className="sticky left-0 z-20 flex w-28 shrink-0 items-center border-r border-b bg-background px-2 py-3 lg:w-64 lg:px-6 lg:py-4">
 						<span className="font-medium text-sm">Match</span>
 					</div>
@@ -93,7 +93,7 @@ export function ResultsTable({ rows, currentUserId }: ResultsTableProps) {
 							const isCurrentUser = user.id === currentUserId;
 							return (
 								<div
-									className={`flex w-8 shrink-0 flex-col items-center border-r border-b px-2 py-2 lg:w-12 lg:py-3`}
+									className={`flex w-8 shrink-0 flex-col items-center border-r border-b px-2 py-2 lg:w-12 lg:py-3 bg-background`}
 									key={user.id}
 								>
 									<Avatar className="size-5 lg:size-8">
