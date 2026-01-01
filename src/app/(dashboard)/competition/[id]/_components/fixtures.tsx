@@ -3,17 +3,17 @@ import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
-import type { Match } from "~/types/competition";
 
 type MatchdayGroup = {
 	matchday: number;
 	totalMatches: number;
 	dateGroups: {
 		date: string;
-		matches: Match[];
+		matches: ProcessedFutureMatch[];
 	}[];
 };
 
+import type { ProcessedFutureMatch } from "~/server/api/routers/competition";
 import { MatchRow } from "./match-row";
 
 type FixturesProps = {

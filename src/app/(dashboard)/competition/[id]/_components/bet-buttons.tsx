@@ -1,5 +1,6 @@
 "use client";
-import type { Match, PlaceBetMutation } from "~/types/competition";
+import type { ProcessedFutureMatch } from "~/server/api/routers/competition";
+import type { PlaceBetMutation } from "~/types/competition";
 
 const BET_DISPLAY = {
 	HOME: "1",
@@ -13,7 +14,7 @@ export function BetButtons({
 	competitionId,
 	placeBetMutation,
 }: {
-	currentUserBet: Match["currentUserBet"];
+	currentUserBet: ProcessedFutureMatch["currentUserBet"];
 	matchId: number;
 	competitionId: number;
 	placeBetMutation: PlaceBetMutation;

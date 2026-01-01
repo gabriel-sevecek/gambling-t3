@@ -9,7 +9,7 @@ import { Results } from "./_components/results";
 export default async function CompetitionPage({
 	params,
 }: {
-	params: { id: string };
+	params: Promise<{ id: string }>;
 }) {
 	const session = await getSession();
 	const { id: idString } = await params;

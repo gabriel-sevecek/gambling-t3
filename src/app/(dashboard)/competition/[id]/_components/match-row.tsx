@@ -1,5 +1,6 @@
 import Image from "next/image";
-import type { Match, PlaceBetMutation } from "~/types/competition";
+import type { ProcessedFutureMatch } from "~/server/api/routers/competition";
+import type { PlaceBetMutation } from "~/types/competition";
 import { BetButtons } from "./bet-buttons";
 
 type Team = {
@@ -9,7 +10,7 @@ type Team = {
 };
 
 type MatchRowProps = {
-	match: Match;
+	match: ProcessedFutureMatch;
 	competitionId: number;
 	placeBetMutation: PlaceBetMutation;
 };

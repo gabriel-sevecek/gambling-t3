@@ -19,7 +19,7 @@ type FutureMatchWithBets = Prisma.FootballMatchGetPayload<{
 	};
 }>;
 
-type ProcessedFutureMatch = Omit<FutureMatchWithBets, "matchBets"> & {
+export type ProcessedFutureMatch = Omit<FutureMatchWithBets, "matchBets"> & {
 	currentUserBet: FutureMatchWithBets["matchBets"][0] | null;
 };
 
