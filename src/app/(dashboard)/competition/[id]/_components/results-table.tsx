@@ -7,8 +7,12 @@ type PastMatch = NonNullable<
 	RouterOutputs["competition"]["getCompeitionPastMatches"]
 >["matches"][0];
 
+type TableRow = 
+	| { type: 'matchday'; matchday: number; totalMatches: number; currentMatches: number }
+	| { type: 'match'; match: PastMatch };
+
 type ResultsTableProps = {
-	matches: PastMatch[];
+	rows: TableRow[];
 	currentUserId: string;
 };
 
@@ -62,7 +66,9 @@ function BetResultCell({
 	);
 }
 
-export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
+export function ResultsTable({ rows, currentUserId }: ResultsTableProps) {
+	const matches = rows.filter((row): row is { type: 'match'; match: PastMatch } => row.type === 'match').map(row => row.match);
+	
 	const allUsers = Array.from(
 		new Map(
 			matches
@@ -110,7 +116,25 @@ export function ResultsTable({ matches, currentUserId }: ResultsTableProps) {
 				</div>
 
 				<div className="divide-y">
-					{matches.map((match) => {
+					{rows.map((row, index) => {
+						if (row.type === 'matchday') {
+							return (
+								<div className="flex bg-muted/50" key={`matchday-${row.matchday}`}>
+									<div className="flex w-full items-center px-2 py-4 lg:px-6">
+										<span className="font-bold text-lg">
+											Matchday {row.matchday}
+										</span>
+										{row.currentMatches !== row.totalMatches && (
+											<span className="ml-2 font-normal text-muted-foreground text-sm">
+												({row.currentMatches} of {row.totalMatches} matches)
+											</span>
+										)}
+									</div>
+								</div>
+							);
+						}
+
+						const match = row.match;
 						const actualResult = getMatchResult(
 							match.homeTeamGoals,
 							match.awayTeamGoals,

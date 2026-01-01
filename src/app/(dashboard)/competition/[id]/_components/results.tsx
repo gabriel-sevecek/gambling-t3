@@ -103,41 +103,37 @@ export function Results({ competitionId, currentUserId }: ResultsProps) {
 		);
 	}
 
-	return (
-		<div className="space-y-8">
-			{groupedMatchdays.map((matchdayGroup) => {
-				const currentMatches = matchdayGroup.dateGroups.reduce(
-					(total, dateGroup) => total + dateGroup.matches.length,
-					0,
-				);
-				const isComplete = currentMatches === matchdayGroup.totalMatches;
+	const tableRows: Array<{ type: 'matchday'; matchday: number; totalMatches: number; currentMatches: number } | { type: 'match'; match: any }> = [];
+	
+	for (const matchdayGroup of groupedMatchdays) {
+		const currentMatches = matchdayGroup.dateGroups.reduce(
+			(total, dateGroup) => total + dateGroup.matches.length,
+			0,
+		);
+		
+		tableRows.push({
+			type: 'matchday',
+			matchday: matchdayGroup.matchday,
+			totalMatches: matchdayGroup.totalMatches,
+			currentMatches,
+		});
 
-				return (
-					<div key={matchdayGroup.matchday}>
-						<h2 className="mb-6 font-bold text-2xl">
-							Matchday {matchdayGroup.matchday}
-							{!isComplete && (
-								<span className="ml-2 font-normal text-muted-foreground text-sm">
-									({currentMatches} of {matchdayGroup.totalMatches} matches)
-								</span>
-							)}
-						</h2>
-						<div className="space-y-6">
-							{matchdayGroup.dateGroups.map((dateGroup) => (
-								<div key={dateGroup.date}>
-									<h3 className="mb-2 font-medium text-muted-foreground text-sm">
-										{dateGroup.date}
-									</h3>
-									<ResultsTable
-										currentUserId={currentUserId}
-										matches={dateGroup.matches}
-									/>
-								</div>
-							))}
-						</div>
-					</div>
-				);
-			})}
+		for (const dateGroup of matchdayGroup.dateGroups) {
+			for (const match of dateGroup.matches) {
+				tableRows.push({
+					type: 'match',
+					match,
+				});
+			}
+		}
+	}
+
+	return (
+		<div className="space-y-6">
+			<ResultsTable
+				currentUserId={currentUserId}
+				rows={tableRows}
+			/>
 			{hasNextPage && (
 				<div className="flex justify-center pt-4">
 					<Button
