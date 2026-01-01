@@ -99,7 +99,6 @@ async function main() {
 			description:
 				"Predict the outcomes of Premier League matches for the 2025/26 season",
 			footballSeasonId: footballSeason.id,
-			footballCompetitionId: footballCompetition.id,
 			isActive: true,
 		},
 	});
