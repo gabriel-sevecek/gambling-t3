@@ -58,23 +58,29 @@ export function Fixtures({ competitionId }: FixturesProps) {
 							if (!page) return page;
 							return {
 								...page,
-								matches: page.matches.map((match) => {
-									if (match.id === matchId) {
-										return {
-											...match,
-											currentUserBet: {
-												id: 0,
-												competitionId,
-												createdAt: new Date(),
-												updatedAt: new Date(),
-												userId: "",
-												footballMatchId: matchId,
-												prediction,
-											},
-										};
-									}
-									return match;
-								}),
+								matchdays: page.matchdays.map((matchdayGroup) => ({
+									...matchdayGroup,
+									dateGroups: matchdayGroup.dateGroups.map((dateGroup) => ({
+										...dateGroup,
+										matches: dateGroup.matches.map((match) => {
+											if (match.id === matchId) {
+												return {
+													...match,
+													currentUserBet: {
+														id: 0,
+														competitionId,
+														createdAt: new Date(),
+														updatedAt: new Date(),
+														userId: "",
+														footballMatchId: matchId,
+														prediction,
+													},
+												};
+											}
+											return match;
+										}),
+									})),
+								})),
 							};
 						}),
 					};
