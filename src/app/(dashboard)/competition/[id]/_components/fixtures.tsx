@@ -4,6 +4,15 @@ import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
 import type { Match } from "~/types/competition";
+
+type MatchdayGroup = {
+	matchday: number;
+	totalMatches: number;
+	dateGroups: {
+		date: string;
+		matches: Match[];
+	}[];
+};
 import { MatchRow } from "./match-row";
 
 type FixturesProps = {
@@ -111,9 +120,50 @@ export function Fixtures({ competitionId }: FixturesProps) {
 		);
 	}
 
-	const matches = data?.pages.flatMap((page) => page?.matches ?? []) ?? [];
+	const allMatchdays = data?.pages.flatMap((page) => page?.matchdays ?? []) ?? [];
+	
+	const groupedMatchdays = allMatchdays.reduce((acc, matchdayGroup) => {
+		const existing = acc.find(group => group.matchday === matchdayGroup.matchday);
+		
+		if (existing) {
+			for (const dateGroup of matchdayGroup.dateGroups) {
+				const existingDateGroup = existing.dateGroups.find(dg => dg.date === dateGroup.date);
+				if (existingDateGroup) {
+					existingDateGroup.matches.push(...dateGroup.matches);
+				} else {
+					existing.dateGroups.push(dateGroup);
+				}
+			}
+			existing.totalMatches = matchdayGroup.totalMatches;
+		} else {
+			acc.push({
+				matchday: matchdayGroup.matchday,
+				totalMatches: matchdayGroup.totalMatches,
+				dateGroups: matchdayGroup.dateGroups.map(dg => ({
+					date: dg.date,
+					matches: [...dg.matches],
+				})),
+			});
+		}
+		
+		return acc;
+	}, [] as MatchdayGroup[]);
 
-	if (matches.length === 0) {
+	groupedMatchdays.forEach(matchdayGroup => {
+		matchdayGroup.dateGroups.sort((a, b) => {
+			const dateA = new Date(a.date);
+			const dateB = new Date(b.date);
+			return dateA.getTime() - dateB.getTime();
+		});
+		
+		matchdayGroup.dateGroups.forEach(dateGroup => {
+			dateGroup.matches.sort((a, b) => a.date.getTime() - b.date.getTime());
+		});
+	});
+
+	groupedMatchdays.sort((a, b) => a.matchday - b.matchday);
+
+	if (groupedMatchdays.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<p className="text-muted-foreground">No upcoming matches found.</p>
@@ -121,35 +171,45 @@ export function Fixtures({ competitionId }: FixturesProps) {
 		);
 	}
 
-	const matchesByDate = matches.reduce(
-		(acc, match) => {
-			const dateKey = match.date.toDateString();
-			if (!acc[dateKey]) {
-				acc[dateKey] = [];
-			}
-			acc[dateKey].push(match);
-			return acc;
-		},
-		{} as Record<string, Match[]>,
-	);
-
 	return (
-		<div className="space-y-6">
-			{Object.entries(matchesByDate).map(([date, matches]) => (
-				<div key={date}>
-					<h3 className="mb-4 font-semibold text-lg">{date}</h3>
-					<div className="space-y-3">
-						{matches.map((match) => (
-							<MatchRow
-								competitionId={competitionId}
-								key={match.id}
-								match={match}
-								placeBetMutation={placeBetMutation}
-							/>
-						))}
+		<div className="space-y-8">
+			{groupedMatchdays.map((matchdayGroup) => {
+				const currentMatches = matchdayGroup.dateGroups.reduce(
+					(total, dateGroup) => total + dateGroup.matches.length,
+					0,
+				);
+				const isComplete = currentMatches === matchdayGroup.totalMatches;
+				
+				return (
+					<div key={matchdayGroup.matchday}>
+						<h2 className="mb-6 font-bold text-xl">
+							Matchday {matchdayGroup.matchday}
+							{!isComplete && (
+								<span className="ml-2 font-normal text-muted-foreground text-sm">
+									({currentMatches} of {matchdayGroup.totalMatches} matches)
+								</span>
+							)}
+						</h2>
+						<div className="space-y-6">
+							{matchdayGroup.dateGroups.map((dateGroup) => (
+								<div key={dateGroup.date}>
+									<h3 className="mb-4 font-semibold text-lg">{dateGroup.date}</h3>
+									<div className="space-y-3">
+										{dateGroup.matches.map((match) => (
+											<MatchRow
+												competitionId={competitionId}
+												key={match.id}
+												match={match}
+												placeBetMutation={placeBetMutation}
+											/>
+										))}
+									</div>
+								</div>
+							))}
+						</div>
 					</div>
-				</div>
-			))}
+				);
+			})}
 			{hasNextPage && (
 				<div className="flex justify-center pt-4">
 					<Button
@@ -158,7 +218,7 @@ export function Fixtures({ competitionId }: FixturesProps) {
 						onClick={() => fetchNextPage()}
 						variant="outline"
 					>
-						{isFetchingNextPage ? "Loading..." : "Load More"}
+						{isFetchingNextPage ? "Loading..." : "Load More Matches"}
 					</Button>
 				</div>
 			)}
