@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
+import type { FinishedMatchWithBets } from "~/server/api/routers/competition";
 import { api } from "~/trpc/react";
 import { ResultsTable } from "./results-table";
 
@@ -9,7 +10,7 @@ type MatchdayGroup = {
 	totalMatches: number;
 	dateGroups: {
 		date: string;
-		matches: any[];
+		matches: FinishedMatchWithBets[];
 	}[];
 };
 
@@ -103,16 +104,24 @@ export function Results({ competitionId, currentUserId }: ResultsProps) {
 		);
 	}
 
-	const tableRows: Array<{ type: 'matchday'; matchday: number; totalMatches: number; currentMatches: number } | { type: 'match'; match: any }> = [];
-	
+	const tableRows: Array<
+		| {
+				type: "matchday";
+				matchday: number;
+				totalMatches: number;
+				currentMatches: number;
+		  }
+		| { type: "match"; match: FinishedMatchWithBets }
+	> = [];
+
 	for (const matchdayGroup of groupedMatchdays) {
 		const currentMatches = matchdayGroup.dateGroups.reduce(
 			(total, dateGroup) => total + dateGroup.matches.length,
 			0,
 		);
-		
+
 		tableRows.push({
-			type: 'matchday',
+			type: "matchday",
 			matchday: matchdayGroup.matchday,
 			totalMatches: matchdayGroup.totalMatches,
 			currentMatches,
@@ -121,7 +130,7 @@ export function Results({ competitionId, currentUserId }: ResultsProps) {
 		for (const dateGroup of matchdayGroup.dateGroups) {
 			for (const match of dateGroup.matches) {
 				tableRows.push({
-					type: 'match',
+					type: "match",
 					match,
 				});
 			}
@@ -130,10 +139,7 @@ export function Results({ competitionId, currentUserId }: ResultsProps) {
 
 	return (
 		<div className="space-y-6">
-			<ResultsTable
-				currentUserId={currentUserId}
-				rows={tableRows}
-			/>
+			<ResultsTable currentUserId={currentUserId} rows={tableRows} />
 			{hasNextPage && (
 				<div className="flex justify-center pt-4">
 					<Button

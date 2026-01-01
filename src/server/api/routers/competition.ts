@@ -32,7 +32,7 @@ type MatchdayGroup = {
 	}[];
 };
 
-type FinishedMatchWithBets = Prisma.FootballMatchGetPayload<{
+export type FinishedMatchWithBets = Prisma.FootballMatchGetPayload<{
 	include: {
 		homeTeam: true;
 		awayTeam: true;
@@ -615,7 +615,12 @@ export const competitionRouter = createTRPCRouter({
 					homeBets: { total: number; correct: number };
 					awayBets: { total: number; correct: number };
 					drawBets: { total: number; correct: number };
-					recentForm: { matchday: number; correct: number; total: number; rate: number }[];
+					recentForm: {
+						matchday: number;
+						correct: number;
+						total: number;
+						rate: number;
+					}[];
 				}
 			>();
 
@@ -628,7 +633,9 @@ export const competitionRouter = createTRPCRouter({
 			}
 
 			// Get last 3 matchdays
-			const sortedMatchdays = Array.from(matchesByMatchday.keys()).sort((a, b) => b - a);
+			const sortedMatchdays = Array.from(matchesByMatchday.keys()).sort(
+				(a, b) => b - a,
+			);
 			const recentMatchdays = sortedMatchdays.slice(0, 3);
 
 			for (const match of finishedMatches) {
@@ -677,7 +684,10 @@ export const competitionRouter = createTRPCRouter({
 
 			// Calculate recent form by matchday
 			for (const [userId, userStats] of userStatsMap) {
-				const matchdayStats = new Map<number, { correct: number; total: number }>();
+				const matchdayStats = new Map<
+					number,
+					{ correct: number; total: number }
+				>();
 
 				for (const matchday of recentMatchdays) {
 					const matchdayMatches = matchesByMatchday.get(matchday) || [];
@@ -692,7 +702,9 @@ export const competitionRouter = createTRPCRouter({
 									? "AWAY"
 									: "DRAW";
 
-						const userBet = match.matchBets.find(bet => bet.userId === userId);
+						const userBet = match.matchBets.find(
+							(bet) => bet.userId === userId,
+						);
 						if (userBet) {
 							total++;
 							if (userBet.prediction === actualResult) {

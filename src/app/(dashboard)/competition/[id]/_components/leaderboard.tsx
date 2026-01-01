@@ -28,13 +28,13 @@ function FormIndicator({
 	return (
 		<div className="flex items-center gap-1">
 			{recentForm.map((form) => (
-				<div key={form.matchday} className="flex flex-col items-center">
+				<div className="flex flex-col items-center" key={form.matchday}>
 					<div
-						className={`px-1.5 py-0.5 rounded text-xs font-medium ${getColorClass(form.rate)}`}
+						className={`rounded px-1.5 py-0.5 font-medium text-xs ${getColorClass(form.rate)}`}
 					>
 						{form.correct}/{form.total}
 					</div>
-					<div className="text-xs text-muted-foreground mt-0.5">
+					<div className="mt-0.5 text-muted-foreground text-xs">
 						{form.rate.toFixed(0)}%
 					</div>
 				</div>
