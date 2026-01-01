@@ -34,6 +34,8 @@ type MatchdayGroup = {
 
 type FinishedMatchWithBets = Prisma.FootballMatchGetPayload<{
 	include: {
+		homeTeam: true;
+		awayTeam: true;
 		matchBets: {
 			where: {
 				competitionId: number;
@@ -52,6 +54,15 @@ type FinishedMatchWithBets = Prisma.FootballMatchGetPayload<{
 }> & {
 	homeTeamGoals: number;
 	awayTeamGoals: number;
+};
+
+type PastMatchdayGroup = {
+	matchday: number;
+	totalMatches: number;
+	dateGroups: {
+		date: string;
+		matches: FinishedMatchWithBets[];
+	}[];
 };
 
 async function validateCompetitionAccess(
@@ -178,6 +189,58 @@ function groupMatchesByMatchday(
 				const dateA = new Date(a.date);
 				const dateB = new Date(b.date);
 				return dateA.getTime() - dateB.getTime();
+			});
+
+			return {
+				matchday,
+				totalMatches: matchdayTotals.get(matchday) || matches.length,
+				dateGroups,
+			};
+		});
+}
+
+function groupPastMatchesByMatchday(
+	matches: FinishedMatchWithBets[],
+	matchdayTotals: Map<number, number>,
+): PastMatchdayGroup[] {
+	const matchdayMap = new Map<number, FinishedMatchWithBets[]>();
+
+	for (const match of matches) {
+		const existing = matchdayMap.get(match.matchday) || [];
+		existing.push(match);
+		matchdayMap.set(match.matchday, existing);
+	}
+
+	return Array.from(matchdayMap.entries())
+		.sort(([a], [b]) => b - a)
+		.map(([matchday, matches]) => {
+			const dateGroups = matches.reduce(
+				(acc, match) => {
+					const dateKey = match.date.toDateString();
+					const existing = acc.find((group) => group.date === dateKey);
+
+					if (existing) {
+						existing.matches.push(match);
+					} else {
+						acc.push({
+							date: dateKey,
+							matches: [match],
+						});
+					}
+
+					return acc;
+				},
+				[] as { date: string; matches: FinishedMatchWithBets[] }[],
+			);
+
+			dateGroups.forEach((group) => {
+				group.matches.sort((a, b) => b.date.getTime() - a.date.getTime());
+			});
+
+			dateGroups.sort((a, b) => {
+				const dateA = new Date(a.date);
+				const dateB = new Date(b.date);
+				return dateB.getTime() - dateA.getTime();
 			});
 
 			return {
@@ -323,8 +386,22 @@ export const competitionRouter = createTRPCRouter({
 			const pageOfMatches =
 				matches.length > input.limit ? matches.slice(0, -1) : matches;
 
+			const uniqueMatchdays = [
+				...new Set(pageOfMatches.map((m) => m.matchday)),
+			];
+			const matchdayTotals = await getMatchdayTotals(
+				ctx.db,
+				competition.footballSeasonId,
+				uniqueMatchdays,
+			);
+
+			const matchdays = groupPastMatchesByMatchday(
+				pageOfMatches as FinishedMatchWithBets[],
+				matchdayTotals,
+			);
+
 			return {
-				matches: pageOfMatches,
+				matchdays,
 				nextCursor: createNextCursor(matches, input.limit),
 			};
 		}),
