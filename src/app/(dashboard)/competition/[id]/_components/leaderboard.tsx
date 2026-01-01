@@ -9,17 +9,26 @@ type LeaderboardProps = {
 	currentUserId: string;
 };
 
-function FormIndicator({ recentForm }: { recentForm: boolean[] }) {
+function FormIndicator({ recentForm }: { recentForm: { matchday: number; correct: number; total: number; rate: number }[] }) {
+	const getColorClass = (rate: number) => {
+		if (rate >= 60) return "bg-green-500 text-white";
+		if (rate >= 40) return "bg-yellow-500 text-white";
+		return "bg-red-500 text-white";
+	};
+
 	return (
 		<div className="flex items-center gap-1">
-			{recentForm.slice(0, 10).map((isCorrect, index) => (
-				<div
-					className={`size-2 rounded-full ${
-						isCorrect ? "bg-green-500" : "bg-red-500"
-					}`}
-					// biome-ignore lint/suspicious/noArrayIndexKey: array of booleans
-					key={index}
-				/>
+			{recentForm.map((form) => (
+				<div key={form.matchday} className="flex flex-col items-center">
+					<div
+						className={`px-1.5 py-0.5 rounded text-xs font-medium ${getColorClass(form.rate)}`}
+					>
+						{form.correct}/{form.total}
+					</div>
+					<div className="text-xs text-muted-foreground mt-0.5">
+						{form.rate.toFixed(0)}%
+					</div>
+				</div>
 			))}
 		</div>
 	);
