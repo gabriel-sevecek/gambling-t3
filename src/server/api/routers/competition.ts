@@ -615,9 +615,21 @@ export const competitionRouter = createTRPCRouter({
 					homeBets: { total: number; correct: number };
 					awayBets: { total: number; correct: number };
 					drawBets: { total: number; correct: number };
-					recentForm: boolean[];
+					recentForm: { matchday: number; correct: number; total: number; rate: number }[];
 				}
 			>();
+
+			// Group matches by matchday for recent form calculation
+			const matchesByMatchday = new Map<number, FinishedMatchWithBets[]>();
+			for (const match of finishedMatches) {
+				const existing = matchesByMatchday.get(match.matchday) || [];
+				existing.push(match);
+				matchesByMatchday.set(match.matchday, existing);
+			}
+
+			// Get last 5 matchdays
+			const sortedMatchdays = Array.from(matchesByMatchday.keys()).sort((a, b) => b - a);
+			const recentMatchdays = sortedMatchdays.slice(0, 5);
 
 			for (const match of finishedMatches) {
 				const actualResult =
@@ -660,14 +672,48 @@ export const competitionRouter = createTRPCRouter({
 						userStats.drawBets.total++;
 						if (isCorrect) userStats.drawBets.correct++;
 					}
+				}
+			}
 
-					if (userStats.recentForm.length < 10) {
-						userStats.recentForm.unshift(isCorrect);
-					} else {
-						userStats.recentForm.pop();
-						userStats.recentForm.unshift(isCorrect);
+			// Calculate recent form by matchday
+			for (const [userId, userStats] of userStatsMap) {
+				const matchdayStats = new Map<number, { correct: number; total: number }>();
+
+				for (const matchday of recentMatchdays) {
+					const matchdayMatches = matchesByMatchday.get(matchday) || [];
+					let correct = 0;
+					let total = 0;
+
+					for (const match of matchdayMatches) {
+						const actualResult =
+							match.homeTeamGoals > match.awayTeamGoals
+								? "HOME"
+								: match.homeTeamGoals < match.awayTeamGoals
+									? "AWAY"
+									: "DRAW";
+
+						const userBet = match.matchBets.find(bet => bet.userId === userId);
+						if (userBet) {
+							total++;
+							if (userBet.prediction === actualResult) {
+								correct++;
+							}
+						}
+					}
+
+					if (total > 0) {
+						matchdayStats.set(matchday, { correct, total });
 					}
 				}
+
+				userStats.recentForm = Array.from(matchdayStats.entries())
+					.sort(([a], [b]) => b - a)
+					.map(([matchday, stats]) => ({
+						matchday,
+						correct: stats.correct,
+						total: stats.total,
+						rate: (stats.correct / stats.total) * 100,
+					}));
 			}
 
 			const leaderboard = Array.from(userStatsMap.values())
