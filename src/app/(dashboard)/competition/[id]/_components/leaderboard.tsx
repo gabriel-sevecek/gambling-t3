@@ -9,7 +9,16 @@ type LeaderboardProps = {
 	currentUserId: string;
 };
 
-function FormIndicator({ recentForm }: { recentForm: { matchday: number; correct: number; total: number; rate: number }[] }) {
+function FormIndicator({
+	recentForm,
+}: {
+	recentForm: {
+		matchday: number;
+		correct: number;
+		total: number;
+		rate: number;
+	}[];
+}) {
 	const getColorClass = (rate: number) => {
 		if (rate >= 60) return "bg-green-500 text-white";
 		if (rate >= 40) return "bg-yellow-500 text-white";
@@ -66,7 +75,7 @@ function LeaderboardRow({
 			</div>
 
 			{/* Desktop Stats */}
-			<div className="grid hidden max-w-[400px] grid-cols-5 text-center text-sm md:grid">
+			<div className="grid hidden max-w-[500px] grid-cols-5 text-center text-sm md:grid">
 				{/* Overall */}
 				<div className="w-20">
 					<div className="font-semibold text-base">
@@ -162,7 +171,7 @@ export function Leaderboard({
 			<div className="sticky top-0 z-10 flex items-center gap-4 border-b bg-background p-4 font-medium text-sm">
 				<div className="w-8 text-center">Rank</div>
 				<div className="min-w-0 flex-1">User</div>
-				<div className="grid hidden max-w-[400px] grid-cols-5 text-center md:grid">
+				<div className="grid hidden max-w-[500px] grid-cols-5 text-center md:grid">
 					<div className="w-20 font-semibold">Overall</div>
 					<div className="w-16 text-muted-foreground">Home</div>
 					<div className="w-16 text-muted-foreground">Away</div>

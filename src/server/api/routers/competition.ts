@@ -627,9 +627,9 @@ export const competitionRouter = createTRPCRouter({
 				matchesByMatchday.set(match.matchday, existing);
 			}
 
-			// Get last 5 matchdays
+			// Get last 3 matchdays
 			const sortedMatchdays = Array.from(matchesByMatchday.keys()).sort((a, b) => b - a);
-			const recentMatchdays = sortedMatchdays.slice(0, 5);
+			const recentMatchdays = sortedMatchdays.slice(0, 3);
 
 			for (const match of finishedMatches) {
 				const actualResult =
