@@ -32,11 +32,6 @@ type MatchdayGroup = {
 	}[];
 };
 
-type FutureMatchesResponse = {
-	matchdays: MatchdayGroup[];
-	nextCursor: string | null;
-};
-
 type FinishedMatchWithBets = Prisma.FootballMatchGetPayload<{
 	include: {
 		matchBets: {
@@ -128,7 +123,7 @@ async function getMatchdayTotals(
 	matchdays: number[],
 ): Promise<Map<number, number>> {
 	const totals = await db.footballMatch.groupBy({
-		by: ['matchday'],
+		by: ["matchday"],
 		where: {
 			seasonId,
 			matchday: { in: matchdays },
@@ -138,7 +133,7 @@ async function getMatchdayTotals(
 		},
 	});
 
-	return new Map(totals.map(item => [item.matchday, item._count.id]));
+	return new Map(totals.map((item) => [item.matchday, item._count.id]));
 }
 
 function groupMatchesByMatchday(
@@ -146,7 +141,7 @@ function groupMatchesByMatchday(
 	matchdayTotals: Map<number, number>,
 ): MatchdayGroup[] {
 	const matchdayMap = new Map<number, ProcessedFutureMatch[]>();
-	
+
 	for (const match of matches) {
 		const existing = matchdayMap.get(match.matchday) || [];
 		existing.push(match);
@@ -156,23 +151,26 @@ function groupMatchesByMatchday(
 	return Array.from(matchdayMap.entries())
 		.sort(([a], [b]) => a - b)
 		.map(([matchday, matches]) => {
-			const dateGroups = matches.reduce((acc, match) => {
-				const dateKey = match.date.toDateString();
-				const existing = acc.find(group => group.date === dateKey);
-				
-				if (existing) {
-					existing.matches.push(match);
-				} else {
-					acc.push({
-						date: dateKey,
-						matches: [match],
-					});
-				}
-				
-				return acc;
-			}, [] as { date: string; matches: ProcessedFutureMatch[] }[]);
+			const dateGroups = matches.reduce(
+				(acc, match) => {
+					const dateKey = match.date.toDateString();
+					const existing = acc.find((group) => group.date === dateKey);
 
-			dateGroups.forEach(group => {
+					if (existing) {
+						existing.matches.push(match);
+					} else {
+						acc.push({
+							date: dateKey,
+							matches: [match],
+						});
+					}
+
+					return acc;
+				},
+				[] as { date: string; matches: ProcessedFutureMatch[] }[],
+			);
+
+			dateGroups.forEach((group) => {
 				group.matches.sort((a, b) => a.date.getTime() - b.date.getTime());
 			});
 
@@ -472,14 +470,19 @@ export const competitionRouter = createTRPCRouter({
 				matches.length > input.limit ? matches.slice(0, -1) : matches;
 			const processedMatches = processFutureMatches(pageOfMatches);
 
-			const uniqueMatchdays = [...new Set(processedMatches.map(m => m.matchday))];
+			const uniqueMatchdays = [
+				...new Set(processedMatches.map((m) => m.matchday)),
+			];
 			const matchdayTotals = await getMatchdayTotals(
 				ctx.db,
 				competition.footballSeasonId,
 				uniqueMatchdays,
 			);
 
-			const matchdays = groupMatchesByMatchday(processedMatches, matchdayTotals);
+			const matchdays = groupMatchesByMatchday(
+				processedMatches,
+				matchdayTotals,
+			);
 
 			return {
 				matchdays,

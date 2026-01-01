@@ -13,6 +13,7 @@ type MatchdayGroup = {
 		matches: Match[];
 	}[];
 };
+
 import { MatchRow } from "./match-row";
 
 type FixturesProps = {
@@ -126,14 +127,19 @@ export function Fixtures({ competitionId }: FixturesProps) {
 		);
 	}
 
-	const allMatchdays = data?.pages.flatMap((page) => page?.matchdays ?? []) ?? [];
-	
+	const allMatchdays =
+		data?.pages.flatMap((page) => page?.matchdays ?? []) ?? [];
+
 	const groupedMatchdays = allMatchdays.reduce((acc, matchdayGroup) => {
-		const existing = acc.find(group => group.matchday === matchdayGroup.matchday);
-		
+		const existing = acc.find(
+			(group) => group.matchday === matchdayGroup.matchday,
+		);
+
 		if (existing) {
 			for (const dateGroup of matchdayGroup.dateGroups) {
-				const existingDateGroup = existing.dateGroups.find(dg => dg.date === dateGroup.date);
+				const existingDateGroup = existing.dateGroups.find(
+					(dg) => dg.date === dateGroup.date,
+				);
 				if (existingDateGroup) {
 					existingDateGroup.matches.push(...dateGroup.matches);
 				} else {
@@ -145,24 +151,24 @@ export function Fixtures({ competitionId }: FixturesProps) {
 			acc.push({
 				matchday: matchdayGroup.matchday,
 				totalMatches: matchdayGroup.totalMatches,
-				dateGroups: matchdayGroup.dateGroups.map(dg => ({
+				dateGroups: matchdayGroup.dateGroups.map((dg) => ({
 					date: dg.date,
 					matches: [...dg.matches],
 				})),
 			});
 		}
-		
+
 		return acc;
 	}, [] as MatchdayGroup[]);
 
-	groupedMatchdays.forEach(matchdayGroup => {
+	groupedMatchdays.forEach((matchdayGroup) => {
 		matchdayGroup.dateGroups.sort((a, b) => {
 			const dateA = new Date(a.date);
 			const dateB = new Date(b.date);
 			return dateA.getTime() - dateB.getTime();
 		});
-		
-		matchdayGroup.dateGroups.forEach(dateGroup => {
+
+		matchdayGroup.dateGroups.forEach((dateGroup) => {
 			dateGroup.matches.sort((a, b) => a.date.getTime() - b.date.getTime());
 		});
 	});
@@ -185,10 +191,10 @@ export function Fixtures({ competitionId }: FixturesProps) {
 					0,
 				);
 				const isComplete = currentMatches === matchdayGroup.totalMatches;
-				
+
 				return (
 					<div key={matchdayGroup.matchday}>
-						<h2 className="mb-6 font-bold text-xl">
+						<h2 className="mb-6 font-bold text-2xl">
 							Matchday {matchdayGroup.matchday}
 							{!isComplete && (
 								<span className="ml-2 font-normal text-muted-foreground text-sm">
@@ -199,7 +205,9 @@ export function Fixtures({ competitionId }: FixturesProps) {
 						<div className="space-y-6">
 							{matchdayGroup.dateGroups.map((dateGroup) => (
 								<div key={dateGroup.date}>
-									<h3 className="mb-4 font-semibold text-lg">{dateGroup.date}</h3>
+									<h3 className="mb-2 font-medium text-muted-foreground text-sm">
+										{dateGroup.date}
+									</h3>
 									<div className="space-y-3">
 										{dateGroup.matches.map((match) => (
 											<MatchRow
