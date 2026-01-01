@@ -84,8 +84,8 @@ export function ResultsTable({ rows, currentUserId }: ResultsTableProps) {
 	return (
 		<div className="overflow-x-auto">
 			<div className="min-w-fit">
-				<div className="sticky top-0 z-10 flex bg-background shadow-sm">
-					<div className="sticky left-0 z-20 flex w-28 shrink-0 items-center border-r border-b bg-background px-2 py-3 lg:w-64 lg:px-6 lg:py-4">
+				<div className="sticky top-0 z-20 flex bg-background shadow-sm">
+					<div className="sticky left-0 z-30 flex w-28 shrink-0 items-center border-r border-b bg-background px-2 py-3 lg:w-64 lg:px-6 lg:py-4">
 						<span className="font-medium text-sm">Match</span>
 					</div>
 					<div className="flex">
