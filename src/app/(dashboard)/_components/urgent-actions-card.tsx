@@ -15,7 +15,7 @@ export function UrgentActionsCard() {
 				<Skeleton className="mb-4 h-6 w-48" />
 				<div className="space-y-3">
 					{[1, 2, 3].map((i) => (
-						<Skeleton key={i} className="h-16 w-full" />
+						<Skeleton className="h-16 w-full" key={i} />
 					))}
 				</div>
 			</div>
@@ -65,16 +65,16 @@ export function UrgentActionsCard() {
 			</div>
 			<div className="space-y-3">
 				{upcomingMatches.slice(0, 5).map((match) => (
-					<div key={match.id} className="rounded-md border p-3">
+					<div className="rounded-md border p-3" key={match.id}>
 						<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 							<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
 								<div className="flex items-center gap-2">
 									<Image
-										src={match.homeTeam.crestUrl}
 										alt={match.homeTeam.name}
-										width={20}
-										height={20}
 										className="object-contain"
+										height={20}
+										src={match.homeTeam.crestUrl}
+										width={20}
 									/>
 									<span className="font-medium text-sm">
 										{match.homeTeam.tla}
@@ -84,11 +84,11 @@ export function UrgentActionsCard() {
 										{match.awayTeam.tla}
 									</span>
 									<Image
-										src={match.awayTeam.crestUrl}
 										alt={match.awayTeam.name}
-										width={20}
-										height={20}
 										className="object-contain"
+										height={20}
+										src={match.awayTeam.crestUrl}
+										width={20}
 									/>
 									<span
 										className={`ml-2 rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}
@@ -103,9 +103,9 @@ export function UrgentActionsCard() {
 							<div className="flex items-center gap-2 sm:flex-shrink-0">
 								<Button
 									asChild
+									className="w-full sm:w-auto"
 									size="sm"
 									variant="outline"
-									className="w-full sm:w-auto"
 								>
 									<Link href={`/competition/${match.competition.id}`}>
 										Bet Now
