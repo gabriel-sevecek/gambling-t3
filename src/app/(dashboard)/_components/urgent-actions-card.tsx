@@ -64,40 +64,42 @@ export function UrgentActionsCard() {
 			</div>
 			<div className="space-y-3">
 				{upcomingMatches.slice(0, 5).map((match) => (
-					<div key={match.id} className="flex items-center justify-between rounded-md border p-3">
-						<div className="flex items-center gap-3">
-							<div className="flex items-center gap-2">
-								<Image
-									src={match.homeTeam.crestUrl}
-									alt={match.homeTeam.name}
-									width={20}
-									height={20}
-									className="object-contain"
-								/>
-								<span className="font-medium text-sm">{match.homeTeam.tla}</span>
-								<span className="text-muted-foreground text-xs">vs</span>
-								<span className="font-medium text-sm">{match.awayTeam.tla}</span>
-								<Image
-									src={match.awayTeam.crestUrl}
-									alt={match.awayTeam.name}
-									width={20}
-									height={20}
-									className="object-contain"
-								/>
+					<div key={match.id} className="rounded-md border p-3">
+						<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+							<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+								<div className="flex items-center gap-2">
+									<Image
+										src={match.homeTeam.crestUrl}
+										alt={match.homeTeam.name}
+										width={20}
+										height={20}
+										className="object-contain"
+									/>
+									<span className="font-medium text-sm">{match.homeTeam.tla}</span>
+									<span className="text-muted-foreground text-xs">vs</span>
+									<span className="font-medium text-sm">{match.awayTeam.tla}</span>
+									<Image
+										src={match.awayTeam.crestUrl}
+										alt={match.awayTeam.name}
+										width={20}
+										height={20}
+										className="object-contain"
+									/>
+								</div>
+								<span className="text-muted-foreground text-xs">
+									in {match.competition.name}
+								</span>
 							</div>
-							<span className="text-muted-foreground text-xs">
-								in {match.competition.name}
-							</span>
-						</div>
-						<div className="flex items-center gap-2">
-							<span className={`rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}>
-								{getTimeUntilMatch(match.date)}
-							</span>
-							<Button asChild size="sm" variant="outline">
-								<Link href={`/competition/${match.competition.id}`}>
-									Bet Now
-								</Link>
-							</Button>
+							<div className="flex items-center gap-2 sm:flex-shrink-0">
+								<span className={`rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}>
+									{getTimeUntilMatch(match.date)}
+								</span>
+								<Button asChild size="sm" variant="outline" className="w-full sm:w-auto">
+									<Link href={`/competition/${match.competition.id}`}>
+										Bet Now
+									</Link>
+								</Button>
+							</div>
 						</div>
 					</div>
 				))}
