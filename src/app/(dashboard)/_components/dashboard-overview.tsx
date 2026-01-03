@@ -1,6 +1,6 @@
-import { UrgentActionsCard } from "./urgent-actions-card";
-import { PerformanceSummary } from "./performance-summary";
 import { CompetitionCards } from "./competition-cards";
+import { PerformanceSummary } from "./performance-summary";
+import { UrgentActionsCard } from "./urgent-actions-card";
 
 export function DashboardOverview() {
 	return (
@@ -9,7 +9,7 @@ export function DashboardOverview() {
 				<UrgentActionsCard />
 				<PerformanceSummary />
 			</div>
-			
+
 			<div>
 				<h2 className="mb-4 font-semibold text-xl">Your Competitions</h2>
 				<CompetitionCards />

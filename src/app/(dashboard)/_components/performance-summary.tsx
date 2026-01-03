@@ -1,5 +1,5 @@
 "use client";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
 
@@ -12,7 +12,7 @@ export function PerformanceSummary() {
 				<Skeleton className="mb-4 h-6 w-32" />
 				<div className="grid grid-cols-3 gap-4">
 					{[1, 2, 3].map((i) => (
-						<div key={i} className="text-center">
+						<div className="text-center" key={i}>
 							<Skeleton className="mx-auto mb-2 h-8 w-16" />
 							<Skeleton className="mx-auto h-4 w-20" />
 						</div>
@@ -57,11 +57,15 @@ export function PerformanceSummary() {
 					<div className="text-muted-foreground text-sm">Total Bets</div>
 				</div>
 				<div>
-					<div className="font-bold text-2xl">{userStats.correctPredictions}</div>
+					<div className="font-bold text-2xl">
+						{userStats.correctPredictions}
+					</div>
 					<div className="text-muted-foreground text-sm">Correct</div>
 				</div>
 				<div>
-					<div className={`font-bold text-2xl ${getTrendColor(userStats.successRate)}`}>
+					<div
+						className={`font-bold text-2xl ${getTrendColor(userStats.successRate)}`}
+					>
 						{userStats.successRate.toFixed(1)}%
 					</div>
 					<div className="text-muted-foreground text-sm">Success Rate</div>

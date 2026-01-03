@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
@@ -122,7 +121,8 @@ export const dashboardRouter = createTRPCRouter({
 			}
 		}
 
-		const successRate = totalBets > 0 ? (correctPredictions / totalBets) * 100 : 0;
+		const successRate =
+			totalBets > 0 ? (correctPredictions / totalBets) * 100 : 0;
 
 		return {
 			totalBets,

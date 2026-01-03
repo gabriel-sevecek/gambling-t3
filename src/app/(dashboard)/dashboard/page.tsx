@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "~/server/better-auth/config";
+import { getSession } from "~/server/better-auth/server";
 import { DashboardOverview } from "../_components/dashboard-overview";
 
 export default async function DashboardPage() {
@@ -17,7 +17,7 @@ export default async function DashboardPage() {
 					Overview of your competitions and upcoming matches
 				</p>
 			</div>
-			
+
 			<DashboardOverview />
 		</div>
 	);

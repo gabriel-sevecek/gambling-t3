@@ -298,11 +298,12 @@ async function getUserRankInCompetition(
 		}
 	}
 
-	const sortedUsers = Array.from(userStatsMap.entries())
-		.sort(([, a], [, b]) => {
+	const sortedUsers = Array.from(userStatsMap.entries()).sort(
+		([, a], [, b]) => {
 			if (a.correct !== b.correct) return b.correct - a.correct;
 			return a.total - b.total;
-		});
+		},
+	);
 
 	const userIndex = sortedUsers.findIndex(([id]) => id === userId);
 	return userIndex === -1 ? null : userIndex + 1;

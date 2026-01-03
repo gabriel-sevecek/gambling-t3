@@ -7,14 +7,18 @@ import { api } from "~/trpc/react";
 import { BetButtons } from "../competition/[id]/_components/bet-buttons";
 
 export function UrgentActionsCard() {
-	const [localBets, setLocalBets] = useState<Map<number, "HOME" | "DRAW" | "AWAY">>(new Map());
-	
+	const [localBets, setLocalBets] = useState<
+		Map<number, "HOME" | "DRAW" | "AWAY">
+	>(new Map());
+
 	const { data: upcomingMatches, isLoading } =
 		api.dashboard.getUpcomingMatches.useQuery();
 
 	const placeBetMutation = api.competition.placeBet.useMutation({
 		onSuccess: (_, variables) => {
-			setLocalBets(prev => new Map(prev).set(variables.matchId, variables.prediction));
+			setLocalBets((prev) =>
+				new Map(prev).set(variables.matchId, variables.prediction),
+			);
 			toast.success("Bet placed successfully!");
 		},
 		onError: () => {
@@ -78,10 +82,7 @@ export function UrgentActionsCard() {
 			</div>
 			<div className="space-y-3">
 				{upcomingMatches.slice(0, 5).map((match) => (
-					<div 
-						className="rounded-md border p-3" 
-						key={match.id}
-					>
+					<div className="rounded-md border p-3" key={match.id}>
 						<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 							<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
 								<div className="flex items-center gap-2">
@@ -118,17 +119,21 @@ export function UrgentActionsCard() {
 							</div>
 							<div className="flex items-center gap-2 sm:flex-shrink-0">
 								<BetButtons
-									currentUserBet={localBets.has(match.id) ? {
-										id: 0,
-										competitionId: match.competition.id,
-										createdAt: new Date(),
-										updatedAt: new Date(),
-										userId: "",
-										footballMatchId: match.id,
-										prediction: localBets.get(match.id)!,
-									} : null}
-									matchId={match.id}
 									competitionId={match.competition.id}
+									currentUserBet={
+										localBets.has(match.id)
+											? {
+													id: 0,
+													competitionId: match.competition.id,
+													createdAt: new Date(),
+													updatedAt: new Date(),
+													userId: "",
+													footballMatchId: match.id,
+													prediction: localBets.get(match.id)!,
+												}
+											: null
+									}
+									matchId={match.id}
 									placeBetMutation={placeBetMutation}
 								/>
 							</div>
