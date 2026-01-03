@@ -6,7 +6,8 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
 
 export function UrgentActionsCard() {
-	const { data: upcomingMatches, isLoading } = api.dashboard.getUpcomingMatches.useQuery();
+	const { data: upcomingMatches, isLoading } =
+		api.dashboard.getUpcomingMatches.useQuery();
 
 	if (isLoading) {
 		return (
@@ -37,7 +38,7 @@ export function UrgentActionsCard() {
 		const diff = date.getTime() - now.getTime();
 		const hours = Math.floor(diff / (1000 * 60 * 60));
 		const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-		
+
 		if (hours < 1) {
 			return `${minutes}m`;
 		}
@@ -48,7 +49,7 @@ export function UrgentActionsCard() {
 		const now = new Date();
 		const diff = date.getTime() - now.getTime();
 		const hours = diff / (1000 * 60 * 60);
-		
+
 		if (hours < 6) return "text-red-600 bg-red-50";
 		if (hours < 24) return "text-amber-600 bg-amber-50";
 		return "text-blue-600 bg-blue-50";
@@ -75,9 +76,13 @@ export function UrgentActionsCard() {
 										height={20}
 										className="object-contain"
 									/>
-									<span className="font-medium text-sm">{match.homeTeam.tla}</span>
+									<span className="font-medium text-sm">
+										{match.homeTeam.tla}
+									</span>
 									<span className="text-muted-foreground text-xs">vs</span>
-									<span className="font-medium text-sm">{match.awayTeam.tla}</span>
+									<span className="font-medium text-sm">
+										{match.awayTeam.tla}
+									</span>
 									<Image
 										src={match.awayTeam.crestUrl}
 										alt={match.awayTeam.name}
@@ -89,12 +94,19 @@ export function UrgentActionsCard() {
 								<span className="text-muted-foreground text-xs">
 									in {match.competition.name}
 								</span>
-							</div>
-							<div className="flex items-center gap-2 sm:flex-shrink-0">
-								<span className={`rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}>
+								<span
+									className={`rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}
+								>
 									{getTimeUntilMatch(match.date)}
 								</span>
-								<Button asChild size="sm" variant="outline" className="w-full sm:w-auto">
+							</div>
+							<div className="flex items-center gap-2 sm:flex-shrink-0">
+								<Button
+									asChild
+									size="sm"
+									variant="outline"
+									className="w-full sm:w-auto"
+								>
 									<Link href={`/competition/${match.competition.id}`}>
 										Bet Now
 									</Link>
