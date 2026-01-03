@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
@@ -9,12 +8,10 @@ import { BetButtons } from "../competition/[id]/_components/bet-buttons";
 export function UrgentActionsCard() {
 	const { data: upcomingMatches, isLoading } =
 		api.dashboard.getUpcomingMatches.useQuery();
-	const [hiddenMatches, setHiddenMatches] = useState<Set<number>>(new Set());
 
 	const placeBetMutation = api.competition.placeBet.useMutation({
-		onSuccess: (_, variables) => {
+		onSuccess: () => {
 			toast.success("Bet placed successfully!");
-			setHiddenMatches(prev => new Set(prev).add(variables.matchId));
 		},
 		onError: () => {
 			toast.error("Failed to place bet. Please try again.");
@@ -34,25 +31,12 @@ export function UrgentActionsCard() {
 		);
 	}
 
-	const visibleMatches = upcomingMatches?.filter(match => !hiddenMatches.has(match.id)) ?? [];
-
 	if (!upcomingMatches || upcomingMatches.length === 0) {
 		return (
 			<div className="rounded-lg border bg-card p-6">
 				<h2 className="mb-4 font-semibold text-lg">Urgent Actions</h2>
 				<p className="text-muted-foreground text-sm">
 					No upcoming matches requiring bets in the next 48 hours.
-				</p>
-			</div>
-		);
-	}
-
-	if (visibleMatches.length === 0) {
-		return (
-			<div className="rounded-lg border bg-card p-6">
-				<h2 className="mb-4 font-semibold text-lg">Urgent Actions</h2>
-				<p className="text-muted-foreground text-sm">
-					All upcoming matches have been bet on. Great job!
 				</p>
 			</div>
 		);
@@ -85,15 +69,13 @@ export function UrgentActionsCard() {
 			<div className="mb-4 flex items-center justify-between">
 				<h2 className="font-semibold text-lg">Urgent Actions</h2>
 				<span className="rounded-full bg-red-100 px-2 py-1 font-medium text-red-800 text-xs">
-					{visibleMatches.length} pending
+					{upcomingMatches.length} pending
 				</span>
 			</div>
 			<div className="space-y-3">
-				{visibleMatches.slice(0, 5).map((match) => (
+				{upcomingMatches.slice(0, 5).map((match) => (
 					<div 
-						className={`rounded-md border p-3 transition-opacity duration-300 ${
-							hiddenMatches.has(match.id) ? 'opacity-0' : 'opacity-100'
-						}`} 
+						className="rounded-md border p-3" 
 						key={match.id}
 					>
 						<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -142,10 +124,10 @@ export function UrgentActionsCard() {
 					</div>
 				))}
 			</div>
-			{visibleMatches.length > 5 && (
+			{upcomingMatches.length > 5 && (
 				<div className="mt-4 text-center">
 					<p className="text-muted-foreground text-sm">
-						+{visibleMatches.length - 5} more matches need your attention
+						+{upcomingMatches.length - 5} more matches need your attention
 					</p>
 				</div>
 			)}
