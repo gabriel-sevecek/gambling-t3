@@ -90,14 +90,14 @@ export function UrgentActionsCard() {
 										height={20}
 										className="object-contain"
 									/>
+									<span
+										className={`ml-2 rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}
+									>
+										{getTimeUntilMatch(match.date)}
+									</span>
 								</div>
 								<span className="text-muted-foreground text-xs">
 									in {match.competition.name}
-								</span>
-								<span
-									className={`rounded px-2 py-1 font-medium text-xs ${getUrgencyColor(match.date)}`}
-								>
-									{getTimeUntilMatch(match.date)}
 								</span>
 							</div>
 							<div className="flex items-center gap-2 sm:flex-shrink-0">
