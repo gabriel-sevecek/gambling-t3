@@ -1,4 +1,5 @@
 import { competitionRouter } from "~/server/api/routers/competition";
+import { dashboardRouter } from "~/server/api/routers/dashboard";
 import { userRouter } from "~/server/api/routers/user";
 import {
 	createCallerFactory,
@@ -14,6 +15,7 @@ import {
 export const appRouter = createTRPCRouter({
 	health: publicProcedure.query(() => "ok"),
 	competition: competitionRouter,
+	dashboard: dashboardRouter,
 	user: userRouter,
 });
 
