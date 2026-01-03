@@ -251,9 +251,117 @@ function groupPastMatchesByMatchday(
 		});
 }
 
+async function getUserRankInCompetition(
+	db: PrismaClient,
+	competitionId: number,
+	userId: string,
+): Promise<number | null> {
+	const competition = await db.competition.findUnique({
+		where: { id: competitionId },
+		include: { footballSeason: true },
+	});
+
+	if (!competition) return null;
+
+	const finishedMatches = await db.footballMatch.findMany({
+		where: {
+			seasonId: competition.footballSeasonId,
+			status: "FINISHED",
+			homeTeamGoals: { not: null },
+			awayTeamGoals: { not: null },
+		},
+		include: {
+			matchBets: {
+				where: { competitionId },
+				include: { user: { select: { id: true } } },
+			},
+		},
+	});
+
+	const userStatsMap = new Map<string, { correct: number; total: number }>();
+
+	for (const match of finishedMatches) {
+		const actualResult =
+			match.homeTeamGoals! > match.awayTeamGoals!
+				? "HOME"
+				: match.homeTeamGoals! < match.awayTeamGoals!
+					? "AWAY"
+					: "DRAW";
+
+		for (const bet of match.matchBets) {
+			const stats = userStatsMap.get(bet.userId) || { correct: 0, total: 0 };
+			stats.total++;
+			if (bet.prediction === actualResult) {
+				stats.correct++;
+			}
+			userStatsMap.set(bet.userId, stats);
+		}
+	}
+
+	const sortedUsers = Array.from(userStatsMap.entries())
+		.sort(([, a], [, b]) => {
+			if (a.correct !== b.correct) return b.correct - a.correct;
+			return a.total - b.total;
+		});
+
+	const userIndex = sortedUsers.findIndex(([id]) => id === userId);
+	return userIndex === -1 ? null : userIndex + 1;
+}
+
+async function getUserRecentForm(
+	db: PrismaClient,
+	seasonId: number,
+	competitionId: number,
+	userId: string,
+): Promise<{ correct: number; total: number }> {
+	const recentMatches = await db.footballMatch.findMany({
+		where: {
+			seasonId,
+			status: "FINISHED",
+			homeTeamGoals: { not: null },
+			awayTeamGoals: { not: null },
+		},
+		include: {
+			matchBets: {
+				where: {
+					competitionId,
+					userId,
+				},
+			},
+		},
+		orderBy: [{ date: "desc" }],
+		take: 5,
+	});
+
+	let correct = 0;
+	let total = 0;
+
+	for (const match of recentMatches) {
+		const bet = match.matchBets[0];
+		if (!bet) continue;
+
+		total++;
+		const actualResult =
+			match.homeTeamGoals! > match.awayTeamGoals!
+				? "HOME"
+				: match.homeTeamGoals! < match.awayTeamGoals!
+					? "AWAY"
+					: "DRAW";
+
+		if (bet.prediction === actualResult) {
+			correct++;
+		}
+	}
+
+	return { correct, total };
+}
+
 export const competitionRouter = createTRPCRouter({
 	getUserCompetitions: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.competition.findMany({
+		const now = new Date();
+		const next72Hours = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+
+		const competitions = await ctx.db.competition.findMany({
 			where: {
 				competitionUsers: {
 					some: {
@@ -289,6 +397,50 @@ export const competitionRouter = createTRPCRouter({
 				createdAt: "desc",
 			},
 		});
+
+		const competitionsWithDashboardData = await Promise.all(
+			competitions.map(async (competition) => {
+				const upcomingMatchesCount = await ctx.db.footballMatch.count({
+					where: {
+						seasonId: competition.footballSeasonId,
+						date: {
+							gt: now,
+							lte: next72Hours,
+						},
+						matchBets: {
+							none: {
+								userId: ctx.session.user.id,
+								competitionId: competition.id,
+							},
+						},
+					},
+				});
+
+				const userRank = await getUserRankInCompetition(
+					ctx.db,
+					competition.id,
+					ctx.session.user.id,
+				);
+
+				const recentForm = await getUserRecentForm(
+					ctx.db,
+					competition.footballSeasonId,
+					competition.id,
+					ctx.session.user.id,
+				);
+
+				return {
+					...competition,
+					dashboardData: {
+						upcomingMatchesCount,
+						userRank,
+						recentForm,
+					},
+				};
+			}),
+		);
+
+		return competitionsWithDashboardData;
 	}),
 
 	getCompetitionById: protectedProcedure
