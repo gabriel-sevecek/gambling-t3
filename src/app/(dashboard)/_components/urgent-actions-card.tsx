@@ -1,16 +1,20 @@
 "use client";
 import Image from "next/image";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
 import { BetButtons } from "../competition/[id]/_components/bet-buttons";
 
 export function UrgentActionsCard() {
+	const [localBets, setLocalBets] = useState<Map<number, "HOME" | "DRAW" | "AWAY">>(new Map());
+	
 	const { data: upcomingMatches, isLoading } =
 		api.dashboard.getUpcomingMatches.useQuery();
 
 	const placeBetMutation = api.competition.placeBet.useMutation({
-		onSuccess: () => {
+		onSuccess: (_, variables) => {
+			setLocalBets(prev => new Map(prev).set(variables.matchId, variables.prediction));
 			toast.success("Bet placed successfully!");
 		},
 		onError: () => {
@@ -114,7 +118,15 @@ export function UrgentActionsCard() {
 							</div>
 							<div className="flex items-center gap-2 sm:flex-shrink-0">
 								<BetButtons
-									currentUserBet={null}
+									currentUserBet={localBets.has(match.id) ? {
+										id: 0,
+										competitionId: match.competition.id,
+										createdAt: new Date(),
+										updatedAt: new Date(),
+										userId: "",
+										footballMatchId: match.id,
+										prediction: localBets.get(match.id)!,
+									} : null}
 									matchId={match.id}
 									competitionId={match.competition.id}
 									placeBetMutation={placeBetMutation}
