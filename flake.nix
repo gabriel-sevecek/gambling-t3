@@ -19,6 +19,7 @@
           packages = with pkgs; [
             biome
             nodejs_24
+            pnpm_10
             prisma
             prisma-engines
             openssl
